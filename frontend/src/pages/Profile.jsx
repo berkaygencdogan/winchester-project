@@ -1,88 +1,113 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
-export default function Profile() {
-  const navigate = useNavigate();
+function Profile() {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState({ username: "", profileImage: "" });
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
+  // Firebase oturumunu dinle
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        await fetchUser(currentUser.uid);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
-    if (!token || !userData) {
-      navigate("/login");
-      return;
-    }
-
-    setUser(JSON.parse(userData));
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+  const fetchUser = async (uid) => {
+    const res = await fetch(`http://localhost:5000/api/users/get/${uid}`);
+    const data = await res.json();
+    if (data.success) setProfile(data.user);
   };
 
+  const handleUpdate = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: user.uid,
+          username: profile.username,
+          profileImage: profile.profileImage,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage("Profil güncellendi ✅");
+        setProfile(data.user);
+      } else {
+        setMessage("Güncelleme başarısız ❌");
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage("Sunucu hatası ❌");
+    }
+  };
+
+  if (loading) return <p>Yükleniyor...</p>;
+
   if (!user) {
-    return (
-      <div className="flex justify-center items-center h-screen text-gray-500">
-        Profil yükleniyor...
-      </div>
-    );
+    return <p className="text-center mt-20">Henüz giriş yapmadın 😕</p>;
   }
 
   return (
-    <div className="max-w-md mx-auto mt-12 bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-100">
-      {/* Başlık */}
-      <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent text-center mb-6">
-        Profil Bilgileri
-      </h1>
+    <div className="flex flex-col items-center mt-10">
+      <h1 className="text-2xl font-bold mb-4">Profil Sayfası</h1>
 
-      {/* Profil Resmi */}
-      <div className="flex flex-col items-center mb-6">
-        <img
-          src={
-            user.avatarUrl ||
-            "https://cdn-icons-png.flaticon.com/512/1077/1077012.png"
+      <img
+        src={profile.profileImage || "https://picsum.photos/200"}
+        alt="Profil"
+        className="w-24 h-24 rounded-full mb-4 object-cover border"
+      />
+
+      <input
+        type="text"
+        value={profile.username}
+        onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+        className="border p-2 rounded mb-3 w-60 text-center"
+        placeholder="Kullanıcı adı"
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("profileImage", file);
+
+          const res = await fetch("http://localhost:5000/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          if (data.success) {
+            setProfile({ ...profile, profileImage: data.url });
           }
-          alt="Profil"
-          className="w-24 h-24 rounded-full mb-3 border-4 border-gray-100 shadow-md object-cover"
-        />
-        <h2 className="text-xl font-semibold text-gray-800">
-          @{user.username || "kullanici"}
-        </h2>
-        <p className="text-sm text-gray-500">{user.phone}</p>
-      </div>
+        }}
+        className="mb-3"
+      />
 
-      {/* Bilgi Kartı */}
-      <div className="bg-gray-50 rounded-xl p-4 shadow-inner space-y-2 text-sm text-gray-700">
-        <p>
-          <strong>Ad Soyad:</strong> {user.name || "—"}
-        </p>
-        <p>
-          <strong>E-posta:</strong> {user.email || "—"}
-        </p>
-        <p>
-          <strong>Kullanıcı Adı:</strong> @{user.username || "—"}
-        </p>
-        <p>
-          <strong>Profil Resmi:</strong>{" "}
-          {user.avatarUrl ? "Yüklü" : "Henüz yok"}
-        </p>
-      </div>
-
-      {/* Çıkış Butonu */}
       <button
-        onClick={handleLogout}
-        className="mt-6 w-full bg-red-600 text-white py-2 rounded-xl hover:bg-red-700 active:scale-[0.98] transition-all duration-300 font-medium shadow-md"
+        onClick={handleUpdate}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        Çıkış Yap
+        Güncelle
       </button>
 
-      {/* Alt Bilgi */}
-      <p className="text-center text-xs text-gray-400 mt-4">
-        Winchester Project © 2025
-      </p>
+      <p className="mt-3 text-gray-700">{message}</p>
     </div>
   );
 }
+
+export default Profile;

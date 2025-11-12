@@ -1,146 +1,115 @@
 import { useState } from "react";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import api from "../api/api";
 
-const LoginSchema = Yup.object().shape({
-  phone: Yup.string()
-    .matches(/^[0-9]{10,15}$/, "Geçerli bir telefon girin")
-    .required("Telefon zorunlu"),
-  password: Yup.string().required("Şifre zorunlu"),
-});
-
-export default function Login() {
+function Login() {
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [confirmation, setConfirmation] = useState(null);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const [serverMessage, setServerMessage] = useState("");
-  const [mockMode, setMockMode] = useState(false);
 
-  const handleLogin = async (values) => {
-    setServerMessage("");
-
-    try {
-      if (mockMode) {
-        // Test modu (backend yoksa)
-        if (values.password === "123456") {
-          const fakeToken = "fake-jwt-token";
-          const fakeUser = {
-            phone: values.phone,
-            username: values.phone.slice(-4),
-            avatarUrl: null,
-          };
-          localStorage.setItem("token", fakeToken);
-          localStorage.setItem("user", JSON.stringify(fakeUser));
-          setServerMessage("Giriş başarılı (test modu).");
-          setTimeout(() => navigate("/profile"), 700);
-        } else {
-          setServerMessage("Yanlış şifre (test modu).");
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {},
+          "expired-callback": () => {},
         }
-        return;
-      }
+      );
+    }
+  };
 
-      // Gerçek backend çağrısı
-      const res = await api.post("/auth/login", values);
-      if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        setServerMessage("Giriş başarılı. Yönlendiriliyorsunuz...");
-        setTimeout(() => navigate("/profile"), 700);
-      } else {
-        setServerMessage(res.data.message || "Giriş başarısız");
-      }
+  const sendOtp = async () => {
+    if (!phone.startsWith("+90")) {
+      setMessage("Telefon numarasını +90 formatında gir 📱");
+      return;
+    }
+    try {
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+
+      // 🔧 sadece await kullan
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phone,
+        appVerifier
+      );
+
+      window.confirmationResult = confirmationResult;
+      setConfirmation(confirmationResult); // artık doğru şekilde set ediliyor
+      setMessage("Doğrulama kodu gönderildi 📲");
+    } catch (error) {
+      console.error("OTP hatası:", error);
+      setMessage("SMS gönderilirken hata oluştu ❌");
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      const result = await confirmation.confirm(otp);
+      const user = result.user;
+
+      // ✅ Backend’e kaydet
+      await fetch("http://localhost:5000/api/users/registerOrLogin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: user.uid, phone: user.phoneNumber }),
+      });
+
+      setMessage("Giriş başarılı ✅");
+
+      // ✅ Kullanıcı state Firebase'den güncellensin
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1000);
     } catch (err) {
-      console.error("Login error:", err);
-      setServerMessage("Sunucuya bağlanılamadı, test modunu deneyebilirsin.");
+      console.error(err);
+      setMessage("Kod yanlış veya süresi doldu ❌");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-12 bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-semibold mb-4 text-center">Giriş Yap</h2>
-
-      <Formik
-        initialValues={{ phone: "", password: "" }}
-        validationSchema={LoginSchema}
-        onSubmit={handleLogin}
+    <div className="text-center mt-10">
+      <h1>Telefon ile Giriş</h1>
+      <input
+        placeholder="+905551112233"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="border p-2 rounded w-60"
+      />
+      <button
+        onClick={sendOtp}
+        className="bg-blue-600 text-white p-2 ml-2 rounded"
       >
-        {({ isSubmitting }) => (
-          <Form className="space-y-4">
-            {/* Telefon */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Telefon
-              </label>
-              <Field
-                name="phone"
-                placeholder="5XXXXXXXXX"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2"
-              />
-              <ErrorMessage
-                name="phone"
-                component="div"
-                className="text-sm text-red-600 mt-1"
-              />
-            </div>
+        Kod Gönder
+      </button>
 
-            {/* Şifre */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Şifre
-              </label>
-              <Field
-                name="password"
-                type="password"
-                placeholder="Şifreniz"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2"
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-sm text-red-600 mt-1"
-              />
-            </div>
+      {confirmation && (
+        <div className="mt-3">
+          <input
+            placeholder="Doğrulama kodu"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="border p-2 rounded w-60"
+          />
+          <button
+            onClick={verifyOtp}
+            className="bg-green-600 text-white p-2 ml-2 rounded"
+          >
+            Onayla
+          </button>
+        </div>
+      )}
 
-            {serverMessage && (
-              <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
-                {serverMessage}
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-              >
-                Giriş Yap
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMockMode((m) => !m);
-                  setServerMessage(
-                    !mockMode
-                      ? "Test modu açık: Şifre olarak 123456 gir."
-                      : "Test modu kapatıldı."
-                  );
-                }}
-                className="px-3 py-2 border rounded text-sm"
-              >
-                Test Modu
-              </button>
-            </div>
-
-            <div className="mt-3 text-center text-sm text-gray-600">
-              Hesabın yok mu?{" "}
-              <a href="/register" className="text-blue-600 hover:underline">
-                Kayıt ol
-              </a>
-            </div>
-          </Form>
-        )}
-      </Formik>
+      <p className="mt-3">{message}</p>
+      <div id="recaptcha-container"></div>
     </div>
   );
 }
+
+export default Login;
