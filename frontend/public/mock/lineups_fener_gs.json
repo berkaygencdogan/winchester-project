@@ -1,0 +1,113 @@
+[
+  {
+    "team": { "id": 610, "name": "Fenerbahçe" },
+    "coach": { "id": 5001, "name": "İsmail Kartal" },
+    "formation": "4-3-3",
+
+    "startXI": [
+      { "player": { "id": 1, "name": "Livakovic", "number": 40, "pos": "G" } },
+
+      {
+        "player": { "id": 2, "name": "Osayi-Samuel", "number": 21, "pos": "D" }
+      },
+      { "player": { "id": 3, "name": "Djiku", "number": 6, "pos": "D" } },
+      {
+        "player": { "id": 4, "name": "Oosterwolde", "number": 24, "pos": "D" }
+      },
+      {
+        "player": { "id": 5, "name": "Ferdi Kadıoğlu", "number": 7, "pos": "D" }
+      },
+
+      { "player": { "id": 6, "name": "Fred", "number": 35, "pos": "M" } },
+      {
+        "player": { "id": 7, "name": "İsmail Yüksek", "number": 5, "pos": "M" }
+      },
+      { "player": { "id": 8, "name": "Szymanski", "number": 53, "pos": "M" } },
+
+      { "player": { "id": 9, "name": "İrfan Can", "number": 17, "pos": "F" } },
+      { "player": { "id": 10, "name": "Dzeko", "number": 9, "pos": "F" } },
+      { "player": { "id": 11, "name": "Tadic", "number": 10, "pos": "F" } }
+    ],
+
+    "substitutes": [
+      { "player": { "id": 20, "name": "Mert Hakan", "number": 8, "pos": "M" } },
+      { "player": { "id": 21, "name": "Batshuayi", "number": 23, "pos": "F" } },
+      {
+        "player": { "id": 22, "name": "Cengiz Ünder", "number": 20, "pos": "F" }
+      },
+      { "player": { "id": 23, "name": "Zajc", "number": 26, "pos": "M" } },
+      {
+        "player": { "id": 24, "name": "Serdar Aziz", "number": 4, "pos": "D" }
+      },
+      { "player": { "id": 25, "name": "Becao", "number": 50, "pos": "D" } },
+      { "player": { "id": 26, "name": "Rodrygo", "number": 16, "pos": "M" } },
+      { "player": { "id": 27, "name": "King", "number": 22, "pos": "F" } },
+      {
+        "player": {
+          "id": 28,
+          "name": "Yusuf Akçiçek",
+          "number": 90,
+          "pos": "M"
+        }
+      },
+      { "player": { "id": 29, "name": "Çetin", "number": 41, "pos": "G" } }
+    ]
+  },
+
+  {
+    "team": { "id": 645, "name": "Galatasaray" },
+    "coach": { "id": 5002, "name": "Okan Buruk" },
+    "formation": "4-2-3-1",
+
+    "startXI": [
+      { "player": { "id": 101, "name": "Muslera", "number": 1, "pos": "G" } },
+
+      { "player": { "id": 102, "name": "Boey", "number": 2, "pos": "D" } },
+      { "player": { "id": 103, "name": "Nelsson", "number": 25, "pos": "D" } },
+      {
+        "player": { "id": 104, "name": "Abdülkerim", "number": 42, "pos": "D" }
+      },
+      { "player": { "id": 105, "name": "Angelino", "number": 3, "pos": "D" } },
+
+      { "player": { "id": 106, "name": "Torreira", "number": 34, "pos": "M" } },
+      {
+        "player": {
+          "id": 107,
+          "name": "Kerem Demirbay",
+          "number": 8,
+          "pos": "M"
+        }
+      },
+
+      { "player": { "id": 108, "name": "Ziyech", "number": 22, "pos": "F" } },
+      { "player": { "id": 109, "name": "Mertens", "number": 10, "pos": "F" } },
+      {
+        "player": {
+          "id": 110,
+          "name": "Kerem Aktürkoğlu",
+          "number": 7,
+          "pos": "F"
+        }
+      },
+
+      { "player": { "id": 111, "name": "Icardi", "number": 9, "pos": "F" } }
+    ],
+
+    "substitutes": [
+      { "player": { "id": 120, "name": "Zaha", "number": 14, "pos": "F" } },
+      {
+        "player": { "id": 121, "name": "Kaan Ayhan", "number": 23, "pos": "D" }
+      },
+      { "player": { "id": 122, "name": "Oliveira", "number": 27, "pos": "M" } },
+      {
+        "player": { "id": 123, "name": "Barış Alper", "number": 53, "pos": "F" }
+      },
+      { "player": { "id": 124, "name": "Bakambu", "number": 94, "pos": "F" } },
+      { "player": { "id": 125, "name": "Kazımcan", "number": 17, "pos": "D" } },
+      { "player": { "id": 126, "name": "Günay", "number": 19, "pos": "G" } },
+      { "player": { "id": 127, "name": "Tete", "number": 20, "pos": "F" } },
+      { "player": { "id": 128, "name": "Midtsjö", "number": 6, "pos": "M" } },
+      { "player": { "id": 129, "name": "Berkan", "number": 22, "pos": "M" } }
+    ]
+  }
+]

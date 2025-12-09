@@ -1,0 +1,38 @@
+[
+  {
+    "fixture": {
+      "id": 100001,
+      "referee": "Atilla Karaoğlan",
+      "timezone": "Europe/Istanbul",
+      "date": "2023-12-24T19:00:00+03:00",
+      "timestamp": 1703433600,
+      "status": {
+        "long": "Match Finished",
+        "short": "FT",
+        "elapsed": 90
+      }
+    },
+    "league": {
+      "id": 203,
+      "name": "Süper Lig",
+      "country": "Turkey",
+      "season": 2023,
+      "logo": "https://media.api-sports.io/football/leagues/203.png"
+    },
+    "teams": {
+      "home": {
+        "id": 610,
+        "name": "Fenerbahçe",
+        "logo": "https://media.api-sports.io/football/teams/610.png",
+        "winner": null
+      },
+      "away": {
+        "id": 645,
+        "name": "Galatasaray",
+        "logo": "https://media.api-sports.io/football/teams/645.png",
+        "winner": null
+      }
+    },
+    "goals": { "home": 0, "away": 0 }
+  }
+]

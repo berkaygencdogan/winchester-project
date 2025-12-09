@@ -1,0 +1,211 @@
+[
+  {
+    "team": { "id": 610, "name": "Fenerbahçe" },
+    "players": [
+      {
+        "player": {
+          "id": 1,
+          "name": "Livakovic",
+          "number": 40,
+          "pos": "G",
+          "rating": 7.3
+        }
+      },
+      {
+        "player": {
+          "id": 2,
+          "name": "Osayi-Samuel",
+          "number": 21,
+          "pos": "D",
+          "rating": 7.0
+        }
+      },
+      {
+        "player": {
+          "id": 3,
+          "name": "Djiku",
+          "number": 6,
+          "pos": "D",
+          "rating": 7.1
+        }
+      },
+      {
+        "player": {
+          "id": 4,
+          "name": "Oosterwolde",
+          "number": 24,
+          "pos": "D",
+          "rating": 6.8
+        }
+      },
+      {
+        "player": {
+          "id": 5,
+          "name": "Ferdi",
+          "number": 7,
+          "pos": "D",
+          "rating": 7.2
+        }
+      },
+      {
+        "player": {
+          "id": 6,
+          "name": "Fred",
+          "number": 35,
+          "pos": "M",
+          "rating": 6.9
+        }
+      },
+      {
+        "player": {
+          "id": 7,
+          "name": "İsmail Yüksek",
+          "number": 5,
+          "pos": "M",
+          "rating": 6.7
+        }
+      },
+      {
+        "player": {
+          "id": 8,
+          "name": "Szymanski",
+          "number": 53,
+          "pos": "M",
+          "rating": 6.6
+        }
+      },
+      {
+        "player": {
+          "id": 9,
+          "name": "İrfan Can",
+          "number": 17,
+          "pos": "F",
+          "rating": 6.8
+        }
+      },
+      {
+        "player": {
+          "id": 10,
+          "name": "Dzeko",
+          "number": 9,
+          "pos": "F",
+          "rating": 6.5
+        }
+      },
+      {
+        "player": {
+          "id": 11,
+          "name": "Tadic",
+          "number": 10,
+          "pos": "F",
+          "rating": 6.6
+        }
+      }
+    ]
+  },
+
+  {
+    "team": { "id": 645, "name": "Galatasaray" },
+    "players": [
+      {
+        "player": {
+          "id": 101,
+          "name": "Muslera",
+          "number": 1,
+          "pos": "G",
+          "rating": 7.5
+        }
+      },
+      {
+        "player": {
+          "id": 102,
+          "name": "Boey",
+          "number": 2,
+          "pos": "D",
+          "rating": 7.1
+        }
+      },
+      {
+        "player": {
+          "id": 103,
+          "name": "Nelsson",
+          "number": 25,
+          "pos": "D",
+          "rating": 7.3
+        }
+      },
+      {
+        "player": {
+          "id": 104,
+          "name": "Abdülkerim",
+          "number": 42,
+          "pos": "D",
+          "rating": 7.0
+        }
+      },
+      {
+        "player": {
+          "id": 105,
+          "name": "Angelino",
+          "number": 3,
+          "pos": "D",
+          "rating": 6.8
+        }
+      },
+      {
+        "player": {
+          "id": 106,
+          "name": "Torreira",
+          "number": 34,
+          "pos": "M",
+          "rating": 7.4
+        }
+      },
+      {
+        "player": {
+          "id": 107,
+          "name": "Demirbay",
+          "number": 8,
+          "pos": "M",
+          "rating": 6.9
+        }
+      },
+      {
+        "player": {
+          "id": 108,
+          "name": "Ziyech",
+          "number": 22,
+          "pos": "F",
+          "rating": 7.2
+        }
+      },
+      {
+        "player": {
+          "id": 109,
+          "name": "Mertens",
+          "number": 10,
+          "pos": "F",
+          "rating": 7.1
+        }
+      },
+      {
+        "player": {
+          "id": 110,
+          "name": "Kerem Aktürkoğlu",
+          "number": 7,
+          "pos": "F",
+          "rating": 6.8
+        }
+      },
+      {
+        "player": {
+          "id": 111,
+          "name": "Icardi",
+          "number": 9,
+          "pos": "F",
+          "rating": 6.6
+        }
+      }
+    ]
+  }
+]

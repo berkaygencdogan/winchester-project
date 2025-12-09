@@ -1,0 +1,40 @@
+[
+  {
+    "team": { "id": 610, "name": "Fenerbahçe" },
+    "player": { "id": 1, "name": "Fred" },
+    "type": "Card",
+    "detail": "Yellow Card",
+    "comments": null,
+    "time": { "elapsed": 12 }
+  },
+  {
+    "team": { "id": 645, "name": "Galatasaray" },
+    "player": { "id": 20, "name": "Lucas Torreira" },
+    "type": "Card",
+    "detail": "Yellow Card",
+    "time": { "elapsed": 33 }
+  },
+  {
+    "team": { "id": 610, "name": "Fenerbahçe" },
+    "player": { "id": 9, "name": "Dusan Tadic" },
+    "type": "Card",
+    "detail": "Yellow Card",
+    "time": { "elapsed": 45 }
+  },
+  {
+    "team": { "id": 645, "name": "Galatasaray" },
+    "player": { "id": 11, "name": "Kerem Aktürkoğlu" },
+    "type": "subst",
+    "detail": "Substitution",
+    "assist": { "name": "Zaha" },
+    "time": { "elapsed": 60 }
+  },
+  {
+    "team": { "id": 610, "name": "Fenerbahçe" },
+    "player": { "id": 18, "name": "Osayi-Samuel" },
+    "type": "subst",
+    "detail": "Substitution",
+    "assist": { "name": "Mert Hakan" },
+    "time": { "elapsed": 72 }
+  }
+]
