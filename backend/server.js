@@ -1,14 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { connectDB } from "./config/db.js";
+import "./firebase/firebaseAdmin.js"; // <<< Firebase burada initialize oluyor
 import commentRoutes from "./routes/commentRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
-import matchRoutes from "./routes/matches.js";
+import matchRoutes from "./routes/matchRoutes.js";
+import forumRoutes from "./routes/forumRoutes.js";
 
 dotenv.config();
-connectDB();
 
 const app = express();
 app.use(cors());
@@ -18,7 +18,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/uploads", express.static("uploads"));
-
+app.use("/api/forums", forumRoutes);
 app.use("/api/matches", matchRoutes);
 
 const PORT = process.env.PORT || 5000;

@@ -1,115 +1,98 @@
+// frontend/src/pages/PhoneLogin.jsx
 import { useState } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../firebaseConfig";
-import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import axios from "axios";
 
-function Login() {
+export default function PhoneLogin({ onLogin }) {
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [confirmation, setConfirmation] = useState(null);
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [codeSent, setCodeSent] = useState(false);
+  const [smsCode, setSmsCode] = useState("");
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
+  const [confirmation, setConfirmation] = useState(null);
+
+  const sendCode = async () => {
+    try {
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response) => {},
-          "expired-callback": () => {},
-        }
+        { size: "invisible" }
       );
-    }
-  };
 
-  const sendOtp = async () => {
-    if (!phone.startsWith("+90")) {
-      setMessage("Telefon numarasını +90 formatında gir 📱");
-      return;
-    }
-    try {
-      setupRecaptcha();
-      const appVerifier = window.recaptchaVerifier;
-
-      // 🔧 sadece await kullan
-      const confirmationResult = await signInWithPhoneNumber(
+      const result = await signInWithPhoneNumber(
         auth,
         phone,
-        appVerifier
+        window.recaptchaVerifier
       );
 
-      window.confirmationResult = confirmationResult;
-      setConfirmation(confirmationResult); // artık doğru şekilde set ediliyor
-      setMessage("Doğrulama kodu gönderildi 📲");
-    } catch (error) {
-      console.error("OTP hatası:", error);
-      setMessage("SMS gönderilirken hata oluştu ❌");
+      setConfirmation(result);
+      setCodeSent(true);
+    } catch (err) {
+      console.error(err);
+      alert("SMS gönderilemedi");
     }
   };
 
-  const verifyOtp = async () => {
+  const verifyCode = async () => {
     try {
-      const result = await confirmation.confirm(otp);
-      const user = result.user;
+      const userCred = await confirmation.confirm(smsCode);
+      const idToken = await userCred.user.getIdToken();
 
-      // ✅ Backend’e kaydet
-      await fetch("http://localhost:5000/api/users/registerOrLogin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: user.uid, phone: user.phoneNumber }),
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/users/login-phone",
+        {
+          idToken,
+        }
+      );
 
-      setMessage("Giriş başarılı ✅");
-
-      // ✅ Kullanıcı state Firebase'den güncellensin
-      setTimeout(() => {
-        navigate("/profile");
-      }, 1000);
+      onLogin(res.data.user, res.data.token);
     } catch (err) {
       console.error(err);
-      setMessage("Kod yanlış veya süresi doldu ❌");
+      alert("Kod yanlış!");
     }
   };
 
   return (
-    <div className="text-center mt-10">
-      <h1>Telefon ile Giriş</h1>
-      <input
-        placeholder="+905551112233"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="border p-2 rounded w-60"
-      />
-      <button
-        onClick={sendOtp}
-        className="bg-blue-600 text-white p-2 ml-2 rounded"
-      >
-        Kod Gönder
-      </button>
+    <div className="p-6 max-w-md mx-auto text-white">
+      {!codeSent ? (
+        <>
+          <h2 className="text-xl mb-3">Telefon Numarası ile Giriş</h2>
 
-      {confirmation && (
-        <div className="mt-3">
           <input
-            placeholder="Doğrulama kodu"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="border p-2 rounded w-60"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+90 555 555 55 55"
+            className="p-3 rounded bg-gray-800 w-full mb-3"
           />
+
           <button
-            onClick={verifyOtp}
-            className="bg-green-600 text-white p-2 ml-2 rounded"
+            onClick={sendCode}
+            className="w-full bg-orange-600 py-3 rounded font-bold"
+          >
+            SMS Gönder
+          </button>
+
+          <div id="recaptcha-container"></div>
+        </>
+      ) : (
+        <>
+          <h2 className="text-xl mb-3">SMS Kodunu Gir</h2>
+
+          <input
+            value={smsCode}
+            onChange={(e) => setSmsCode(e.target.value)}
+            placeholder="6 Haneli Kod"
+            className="p-3 rounded bg-gray-800 w-full mb-3"
+          />
+
+          <button
+            onClick={verifyCode}
+            className="w-full bg-green-600 py-3 rounded font-bold"
           >
             Onayla
           </button>
-        </div>
+        </>
       )}
-
-      <p className="mt-3">{message}</p>
-      <div id="recaptcha-container"></div>
     </div>
   );
 }
-
-export default Login;

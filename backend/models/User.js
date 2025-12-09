@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import { db } from "../firebase/firebaseAdmin.js";
 
-const userSchema = new mongoose.Schema(
-  {
-    uid: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    username: { type: String, default: "Noname" },
-    profileImage: { type: String, default: "" },
+export const UserModel = {
+  async getByUID(uid) {
+    const ref = db.collection("users").doc(uid);
+    const snap = await ref.get();
+    return snap.exists ? snap.data() : null;
   },
-  { timestamps: true }
-);
 
-const User = mongoose.model("User", userSchema);
-export default User;
+  async create(data) {
+    await db.collection("users").doc(data.uid).set(data);
+    return data;
+  },
+};

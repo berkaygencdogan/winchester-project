@@ -1,26 +1,40 @@
-import mongoose from "mongoose";
+import admin, { db, auth } from "../firebase/firebaseAdmin";
 
-const commentSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-    },
-    text: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: String,
-      required: true,
-    },
-    parentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-      default: null,
-    },
+const COMMENTS = db.collection("comments");
+
+export const CommentModel = {
+  /* ============================================================
+      📌 Yeni yorum ekle
+  ============================================================ */
+  async create(data) {
+    const ref = await COMMENTS.add({
+      ...data,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const doc = await ref.get();
+    return { id: ref.id, ...doc.data() };
   },
-  { timestamps: true }
-);
 
-export const Comment = mongoose.model("Comment", commentSchema);
+  /* ============================================================
+      📌 Bir foruma ait yorumları getir
+  ============================================================ */
+  async getByForumId(forumId) {
+    const snapshot = await COMMENTS.where("forumId", "==", forumId)
+      .orderBy("createdAt", "asc")
+      .get();
+
+    return snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
+  },
+
+  /* ============================================================
+      📌 Yorum sil
+  ============================================================ */
+  async delete(id) {
+    await COMMENTS.doc(id).delete();
+    return true;
+  },
+};
