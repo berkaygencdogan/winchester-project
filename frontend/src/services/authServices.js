@@ -1,19 +1,36 @@
+// frontend/src/services/authService.js
+
 import axios from "axios";
 import { auth } from "../firebase/firebase";
-import { signInWithCredential, PhoneAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { completeMagicLinkLogin } from "../firebase/firebase";
 
 const API = "http://localhost:5000/api/users";
 
-export async function verifyOTP(verificationId, code) {
-  const credential = PhoneAuthProvider.credential(verificationId, code);
+/* ---------------------------------------------
+   EMAIL + PASSWORD LOGIN
+--------------------------------------------- */
+export async function loginEmailPassword(email, password) {
+  const firebaseRes = await signInWithEmailAndPassword(auth, email, password);
+  const idToken = await firebaseRes.user.getIdToken();
 
-  const res = await signInWithCredential(auth, credential);
-  const idToken = await res.user.getIdToken();
+  const r = await axios.post(`${API}/login`, { idToken });
 
-  // Backend’e gönder
-  const r = await axios.post(`${API}/phone-login`, { idToken });
+  localStorage.setItem("token", r.data.token);
+  localStorage.setItem("user", JSON.stringify(r.data.user));
 
-  // JWT kaydet
+  return r.data;
+}
+
+/* ---------------------------------------------
+   EMAIL LINK (PASSWORDLESS) - TAMAMLAMA
+--------------------------------------------- */
+export async function finishMagicLogin(email, url) {
+  const firebaseRes = await completeMagicLinkLogin(email, url);
+  const idToken = await firebaseRes.user.getIdToken();
+
+  const r = await axios.post(`${API}/email-link-login`, { idToken });
+
   localStorage.setItem("token", r.data.token);
   localStorage.setItem("user", JSON.stringify(r.data.user));
 

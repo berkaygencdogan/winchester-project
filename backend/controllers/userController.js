@@ -1,26 +1,73 @@
 import { auth, db } from "../firebase/firebaseAdmin.js";
-import { UserModel } from "../models/User.js";
+import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
+import { Filter } from "bad-words";
 import { generateToken } from "../utils/generateToken.js";
 
-export const loginPhone = async (req, res) => {
+const filter = new Filter();
+
+/* -----------------------------------------
+   REGISTER (email + password)
+----------------------------------------- */
+export const registerUser = async (req, res) => {
   try {
-    const { idToken } = req.body;
+    const {
+      uid,
+      email,
+      password,
+      phone,
+      username,
+      nickname,
+      birthYear,
+      gender,
+    } = req.body;
 
-    const decoded = await auth.verifyIdToken(idToken);
-    const uid = decoded.uid;
-    const phone = decoded.phone_number;
+    if (!uid) return res.status(400).json({ error: "UID eksik" });
+    if (!email) return res.status(400).json({ error: "Email gerekli" });
 
-    let user = await UserModel.getByUID(uid);
-    if (!user) {
-      user = await UserModel.create({
+    const cleanedNickname = filter
+      .clean(nickname)
+      .replace(/\s+/g, "")
+      .toLowerCase();
+    const cleanedUsername = filter
+      .clean(username)
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+    // UNIQUE kontrol
+    const nicknameSnap = await db
+      .collection("users")
+      .where("nickname", "==", cleanedNickname)
+      .get();
+    if (!nicknameSnap.empty)
+      return res.status(400).json({ error: "Bu nickname alınmış." });
+
+    const usernameSnap = await db
+      .collection("users")
+      .where("username", "==", cleanedUsername)
+      .get();
+    if (!usernameSnap.empty)
+      return res.status(400).json({ error: "Bu kullanıcı adı alınmış." });
+
+    // Password hash
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Firestore user oluştur
+    await db
+      .collection("users")
+      .doc(uid)
+      .set({
         uid,
+        email,
         phone,
-        nickname: null,
-        username: null,
-        birthYear: null,
-        gender: null,
-        avatar: null,
+        username: cleanedUsername,
+        nickname: cleanedNickname,
+        birthYear,
+        gender,
         bio: "",
+        avatar: null,
+        emailVerified: false,
+        passwordHash,
         stats: {
           played: 0,
           win: 0,
@@ -28,15 +75,67 @@ export const loginPhone = async (req, res) => {
           followers: 0,
           following: 0,
         },
-        createdAt: new Date(),
+        createdAt: Date.now(),
       });
-    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+/* -----------------------------------------
+   LOGIN (email + password)
+----------------------------------------- */
+export const loginUser = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ error: "Token eksik" });
+
+    // Firebase token doğrula
+    const decoded = await auth.verifyIdToken(idToken);
+    const uid = decoded.uid;
+    const emailVerified = decoded.email_verified;
+
+    // Firestore user'ı çek
+    const userRef = db.collection("users").doc(uid);
+    const snap = await userRef.get();
+
+    if (!snap.exists) return res.status(400).json({ error: "User not found" });
+
+    // Firestore'da emailVerified güncelle
+    await userRef.update({ emailVerified });
+
+    const user = { ...snap.data(), emailVerified };
 
     const token = generateToken(uid);
 
-    res.json({ success: true, token, user });
+    return res.json({ success: true, token, user });
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+/* -----------------------------------------
+   REFRESH EMAIL VERIFIED STATUS
+----------------------------------------- */
+export const refreshEmailVerifiedStatus = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    const decoded = await auth.verifyIdToken(idToken);
+
+    const uid = decoded.uid;
+    const emailVerified = decoded.email_verified;
+
+    const userRef = db.collection("users").doc(uid);
+
+    await userRef.update({ emailVerified });
+
+    return res.json({ success: true, emailVerified });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: "Phone login failed" });
+    return res.status(400).json({ error: err.message });
   }
 };

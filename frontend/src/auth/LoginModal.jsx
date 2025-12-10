@@ -1,93 +1,114 @@
 import { useState, useContext } from "react";
-import { sendOTP } from "../firebase/firebase";
-import { verifyOTP } from "../services/authServices";
+import axios from "axios";
+import { X } from "lucide-react";
 import { AuthContext } from "../context/AuthProvider";
+import { auth } from "../firebase/firebase";
+import {
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+
+const API = "http://localhost:5000/api/users";
 
 export default function LoginModal({ onClose }) {
-  const { setUser } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
+  const [error, setError] = useState("");
+  const [showResend, setShowResend] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const [phone, setPhone] = useState("");
-  const [verificationId, setVerificationId] = useState(null);
-  const [code, setCode] = useState("");
-  const [step, setStep] = useState("phone"); // phone | otp
-  const [loading, setLoading] = useState(false);
-
-  async function handleSend() {
+  async function handleLogin() {
     try {
-      setLoading(true);
-      const verId = await sendOTP(phone);
-      setVerificationId(verId);
-      setStep("otp"); // → OTP ekranına geç
-      setLoading(false);
+      const fbUser = await signInWithEmailAndPassword(auth, email, password);
+
+      if (!fbUser.user.emailVerified) {
+        setError("Email doğrulanmamış. Lütfen emailinizi doğrulayın.");
+        setShowResend(true);
+        return;
+      }
+
+      const idToken = await fbUser.user.getIdToken();
+
+      // 🔥 Firestore’daki emailVerified alanını güncelle
+      await axios.post(`${API}/refresh-email-status`, { idToken });
+
+      // 🔥 Backend giriş
+      const res = await axios.post(`${API}/login`, { idToken });
+
+      login(res.data.user);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      onClose();
+      window.location.reload();
     } catch (err) {
-      console.error(err);
-      alert("OTP gönderilemedi");
-      setLoading(false);
+      setError(err.response?.data?.error || err.message);
     }
   }
 
-  async function handleVerify() {
+  async function resendVerification() {
     try {
-      setLoading(true);
+      setSending(true);
 
-      const res = await verifyOTP(verificationId, code);
+      const fbUser = await signInWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(fbUser.user);
 
-      setUser(res.user); // kullanıcıyı context'e aktar
-      setLoading(false);
-      onClose();
+      setError("Doğrulama emaili tekrar gönderildi!");
     } catch (err) {
-      console.error(err);
-      alert("Kod doğrulanamadı");
-      setLoading(false);
+      setError("Tekrar gönderilemedi: " + err.message);
+    } finally {
+      setSending(false);
     }
   }
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-[#1E293B] p-6 rounded-xl w-[350px] text-white">
-        <h2 className="text-xl font-bold mb-4">Giriş Yap</h2>
+      <div className="bg-[#1E293B] p-6 rounded-xl w-[360px] relative text-white shadow-xl border border-gray-600">
+        {error && (
+          <div className="bg-red-600/40 p-2 rounded-md text-center mb-3">
+            {error}
 
-        {step === "phone" && (
-          <>
-            <label className="text-sm mb-1 block">Telefon Numarası</label>
-            <input
-              type="text"
-              placeholder="+905555555555"
-              className="w-full px-3 py-2 rounded bg-[#0F172A] mb-4"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-
-            <button
-              onClick={handleSend}
-              disabled={loading}
-              className="w-full bg-orange-600 py-2 rounded"
-            >
-              {loading ? "Gönderiliyor..." : "KOD GÖNDER"}
-            </button>
-          </>
+            {showResend && (
+              <button
+                onClick={resendVerification}
+                className="ml-2 underline text-orange-300"
+              >
+                {sending ? "Gönderiliyor..." : "Tekrar Gönder"}
+              </button>
+            )}
+          </div>
         )}
 
-        {step === "otp" && (
-          <>
-            <label className="text-sm mb-1 block">SMS Kodu</label>
-            <input
-              type="text"
-              placeholder="123456"
-              className="w-full px-3 py-2 rounded bg-[#0F172A] mb-4"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
+        {/* X BUTTON */}
+        <button
+          className="absolute right-3 top-3 text-gray-300 hover:text-white"
+          onClick={onClose}
+        >
+          <X size={22} />
+        </button>
 
-            <button
-              onClick={handleVerify}
-              disabled={loading}
-              className="w-full bg-green-600 py-2 rounded"
-            >
-              {loading ? "Doğrulanıyor..." : "GİRİŞ YAP"}
-            </button>
-          </>
-        )}
+        <h2 className="text-2xl font-bold mb-4 text-center">Giriş Yap</h2>
+
+        <input
+          className="w-full px-3 py-2 mb-3 rounded-lg bg-[#0F172A] border border-gray-700 focus:border-orange-500 outline-none"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          className="w-full px-3 py-2 mb-4 rounded-lg bg-[#0F172A] border border-gray-700 focus:border-orange-500 outline-none"
+          placeholder="Şifre"
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          onClick={handleLogin}
+          className="w-full bg-orange-600 hover:bg-orange-700 transition py-2 rounded-lg font-semibold"
+        >
+          Giriş Yap
+        </button>
       </div>
     </div>
   );

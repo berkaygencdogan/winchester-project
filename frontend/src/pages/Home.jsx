@@ -4,16 +4,9 @@ import BotFeed from "./BotFeed";
 import AdminFeed from "./AdminFeed";
 import ForumFeed from "../components/ForumFeed";
 import RightSide from "../components/RightSide";
-// import { getAuth, signOut } from "firebase/auth";
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState("bot");
-
-  // const auth = getAuth();
-
-  // signOut(auth).then(() => {
-  //   console.log("Çıkış yapıldı");
-  // });
 
   return (
     <div className="grid grid-cols-12 max-w-[1600px] mx-auto gap-4 px-4 mt-4">

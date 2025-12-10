@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import NotificationBox from "./components/NotificationBox";
 import HomeScreen from "./pages/Home";
 import Matches from "./pages/Matches";
 import Forum from "./pages/Forum";
@@ -20,8 +19,6 @@ function App() {
           <Route path="/forum" element={<Forum />} />
           <Route path="/forum/:id" element={<ForumDetail />} />
         </Routes>
-
-        <NotificationBox />
 
         <div className="fixed bottom-6 right-6 w-20 h-20 flex items-center justify-center rounded-full border-4 border-yellow-400 text-yellow-400 font-bold text-lg bg-[#0F172A] shadow-xl">
           AI BOT

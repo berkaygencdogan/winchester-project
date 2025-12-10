@@ -1,9 +1,8 @@
-// firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -17,27 +16,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
 
-// === RECAPTCHA KURULUMU ===
-export function setupRecaptcha() {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-      }
-    );
-  }
+// Şifresiz giriş link gönder
+export function sendMagicLink(email) {
+  const actionCodeSettings = {
+    url: "http://localhost:5173/login-finish",
+    handleCodeInApp: true,
+  };
 
-  return window.recaptchaVerifier;
+  return sendSignInLinkToEmail(auth, email, actionCodeSettings);
 }
 
-// === OTP GÖNDER ===
-export async function sendOTP(phone) {
-  const verifier = setupRecaptcha();
-  const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
-  return confirmation;
+export function completeMagicLinkLogin(email, url) {
+  return signInWithEmailLink(auth, email, url);
 }

@@ -1,11 +1,9 @@
 import { Bell } from "lucide-react";
 
-function NotificationBox() {
+export default function NotificationBox() {
   return (
-    <div className="fixed top-3 right-30 bg-white/20 backdrop-blur-md p-3 rounded-lg cursor-pointer">
-      <Bell size={22} />
+    <div className="p-2 rounded-lg bg-[#1E293B] hover:bg-[#223044] transition cursor-pointer">
+      <Bell size={20} className="text-white" />
     </div>
   );
 }
-
-export default NotificationBox;
