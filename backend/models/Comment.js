@@ -1,40 +1,50 @@
-import admin, { db, auth } from "../firebase/firebaseAdmin";
+import { db } from "../firebase/firebaseAdmin.js";
+import { Timestamp } from "firebase-admin/firestore";
 
-const COMMENTS = db.collection("comments");
+export async function createComment(threadId, userId, message) {
+  const commentRef = db
+    .collection("forums")
+    .doc(threadId)
+    .collection("comments")
+    .doc();
 
-export const CommentModel = {
-  /* ============================================================
-      📌 Yeni yorum ekle
-  ============================================================ */
-  async create(data) {
-    const ref = await COMMENTS.add({
-      ...data,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+  const data = {
+    id: commentRef.id,
+    threadId,
+    userId,
+    message,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  };
 
-    const doc = await ref.get();
-    return { id: ref.id, ...doc.data() };
-  },
+  await commentRef.set(data);
+  return data;
+}
 
-  /* ============================================================
-      📌 Bir foruma ait yorumları getir
-  ============================================================ */
-  async getByForumId(forumId) {
-    const snapshot = await COMMENTS.where("forumId", "==", forumId)
-      .orderBy("createdAt", "asc")
-      .get();
+export async function getComments(threadId, page = 1, limit = 10) {
+  const offset = (page - 1) * limit;
 
-    return snapshot.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
-  },
+  const snapshot = await db
+    .collection("forums")
+    .doc(threadId)
+    .collection("comments")
+    .orderBy("createdAt", "asc")
+    .offset(offset)
+    .limit(limit)
+    .get();
 
-  /* ============================================================
-      📌 Yorum sil
-  ============================================================ */
-  async delete(id) {
-    await COMMENTS.doc(id).delete();
-    return true;
-  },
-};
+  const comments = snapshot.docs.map((d) => d.data());
+
+  return comments;
+}
+
+export async function countComments(threadId) {
+  const snap = await db
+    .collection("forums")
+    .doc(threadId)
+    .collection("comments")
+    .count()
+    .get();
+
+  return snap.data().count;
+}

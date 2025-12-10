@@ -1,70 +1,89 @@
-import admin, { db, auth } from "../firebase/firebaseAdmin.js";
+import { db } from "../firebase/firebaseAdmin.js";
+import { v4 as uuid } from "uuid";
 
-// Firestore referansı
-const forumsRef = admin.firestore().collection("forums");
-
-// ======================================================
-// 📌 Forum oluştur
-// ======================================================
-export async function createForum(req, res) {
+export const getForumThreads = async (req, res) => {
   try {
-    const uid = req.user.uid;
-    const { title, content, image } = req.body;
+    const snap = await db
+      .collection("forums")
+      .where("isDeleted", "==", false)
+      .orderBy("createdAt", "desc")
+      .get();
 
-    if (!title || !content) {
-      return res.status(400).json({ error: "Başlık ve içerik zorunlu." });
-    }
+    const threads = snap.docs.map((doc) => doc.data());
+    return res.json({ threads });
+  } catch (err) {
+    console.error("GET THREADS ERROR:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
 
-    const newForum = {
-      userId: uid,
+export const getThreadById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const threadDoc = await db.collection("forums").doc(id).get();
+    if (!threadDoc.exists)
+      return res.status(404).json({ error: "Thread not found" });
+
+    const thread = threadDoc.data();
+
+    const commentsSnap = await db
+      .collection("forums")
+      .doc(id)
+      .collection("comments")
+      .orderBy("createdAt", "asc")
+      .get();
+
+    const comments = commentsSnap.docs.map((d) => d.data());
+
+    return res.json({ thread, comments });
+  } catch (err) {
+    console.error("GET THREAD ERROR:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/* ======================================================
+   3) Yeni Konu Aç (CreateThread)
+====================================================== */
+export const createThreadController = async (req, res) => {
+  try {
+    const { title, categoryId, authorId, authorName, message } = req.body;
+
+    const threadId = uuid();
+    const commentId = uuid();
+
+    const threadData = {
+      id: threadId,
       title,
-      content,
-      image: image || "",
-      createdAt: Date.now(),
-      commentCount: 0,
+      categoryId,
+      authorId,
+      authorName,
+      replyCount: 1,
+      views: 0,
+      isLocked: false,
+      isDeleted: false,
+      createdAt: new Date(),
     };
 
-    const doc = await forumsRef.add(newForum);
+    await db.collection("forums").doc(threadId).set(threadData);
 
-    res.json({ id: doc.id, ...newForum });
+    await db
+      .collection("forums")
+      .doc(threadId)
+      .collection("comments")
+      .doc(commentId)
+      .set({
+        id: commentId,
+        threadId,
+        userId: authorId,
+        userName: authorName,
+        message,
+        createdAt: new Date(),
+      });
+    return res.json({ success: true, threadId });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("CREATE THREAD ERROR:", err);
+    return res.status(500).json({ error: err.message });
   }
-}
-
-// ======================================================
-// 📌 Forum listesi (son eklenenler)
-// ======================================================
-export async function getForums(req, res) {
-  try {
-    const snap = await forumsRef.orderBy("createdAt", "desc").limit(30).get();
-
-    const result = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
-
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
-// ======================================================
-// 📌 Forum detay
-// ======================================================
-export async function getForumDetail(req, res) {
-  try {
-    const forumId = req.params.id;
-
-    const snap = await forumsRef.doc(forumId).get();
-
-    if (!snap.exists) {
-      return res.status(404).json({ error: "Forum bulunamadı." });
-    }
-
-    res.json({ id: snap.id, ...snap.data() });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+};

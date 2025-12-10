@@ -68,6 +68,7 @@ export const registerUser = async (req, res) => {
         avatar: null,
         emailVerified: false,
         passwordHash,
+        role: "user",
         stats: {
           played: 0,
           win: 0,

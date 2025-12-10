@@ -1,56 +1,48 @@
-import admin, { db, auth } from "../firebase/firebaseAdmin.js";
+import {
+  createComment,
+  getComments,
+  countComments,
+} from "../models/Comment.js";
+import { db } from "../firebase/firebaseAdmin.js";
 
-const forumsRef = admin.firestore().collection("forums");
-const commentsRef = admin.firestore().collection("comments");
-
-export async function addComment(req, res) {
+export const addComment = async (req, res) => {
   try {
-    const uid = req.user.uid;
-    const forumId = req.params.forumId;
-    const { text } = req.body;
+    const { threadId } = req.params;
+    const { userId, message } = req.body;
 
-    if (!text) return res.status(400).json({ error: "Yorum boş olamaz." });
+    if (!userId || !message)
+      return res.status(400).json({ error: "Eksik alanlar var" });
 
-    // Yorum oluştur
-    const newComment = {
-      forumId,
-      userId: uid,
-      text,
-      createdAt: Date.now(),
-    };
+    const comment = await createComment(threadId, userId, message);
 
-    await commentsRef.add(newComment);
+    return res.json({ success: true, comment });
+  } catch (err) {
+    console.error("ADD COMMENT ERROR:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
 
-    // Forumun commentCount'unu +1 yap
-    await forumsRef.doc(forumId).update({
-      commentCount: admin.firestore.FieldValue.increment(1),
+export const listComments = async (req, res) => {
+  try {
+    const { threadId } = req.params;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const comments = await getComments(threadId, page, limit);
+    const total = await countComments(threadId);
+
+    return res.json({
+      success: true,
+      comments,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
-
-    res.json({ success: true, comment: newComment });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("LIST COMMENTS ERROR:", err);
+    return res.status(500).json({ error: err.message });
   }
-}
-
-// ======================================================
-// 📌 Bir forumun yorumlarını getir
-// ======================================================
-export async function getComments(req, res) {
-  try {
-    const forumId = req.params.forumId;
-
-    const snap = await commentsRef
-      .where("forumId", "==", forumId)
-      .orderBy("createdAt", "asc")
-      .get();
-
-    const result = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
-
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+};

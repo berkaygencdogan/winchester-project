@@ -1,55 +1,55 @@
-import admin, { db, auth } from "../firebase/firebaseAdmin";
+import { db } from "../firebase/firebaseAdmin.js";
+import { Timestamp } from "firebase-admin/firestore";
+import { v4 as uuidv4 } from "uuid";
 
-const FORUMS = db.collection("forums");
+export async function createThread(title, authorId, authorName, categoryId) {
+  const threadId = uuidv4();
 
-export const ForumModel = {
-  /* ============================================================
-      📌 Yeni forum konusu oluştur
-  ============================================================ */
-  async create(data) {
-    const ref = await FORUMS.add({
-      ...data,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+  const data = {
+    id: threadId,
+    title,
+    authorId,
+    authorName,
+    categoryId,
+    createdAt: Timestamp.now(),
+    views: 0,
+    replyCount: 0,
 
-    const doc = await ref.get();
-    return { id: ref.id, ...doc.data() };
-  },
+    // Admin features
+    isLocked: false,
+    lockedAt: null,
+    lockedBy: null,
 
-  /* ============================================================
-      📌 Tüm forumları getir (tarihe göre sıralı)
-  ============================================================ */
-  async getAll() {
-    const snapshot = await FORUMS.orderBy("createdAt", "desc").get();
+    isDeleted: false,
+    deletedAt: null,
+    deletedBy: null,
+  };
 
-    return snapshot.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
-  },
+  await db.collection("forums").doc(threadId).set(data);
 
-  /* ============================================================
-      📌 Tek forumu getir
-  ============================================================ */
-  async getById(id) {
-    const doc = await FORUMS.doc(id).get();
-    return doc.exists ? { id: doc.id, ...doc.data() } : null;
-  },
+  return data;
+}
 
-  /* ============================================================
-      📌 Forum güncelle (başlık vs.)
-  ============================================================ */
-  async update(id, updates) {
-    await FORUMS.doc(id).update(updates);
-    const updated = await FORUMS.doc(id).get();
-    return { id: updated.id, ...updated.data() };
-  },
+export async function softDeleteThread(threadId, adminId) {
+  return db.collection("forums").doc(threadId).update({
+    isDeleted: true,
+    deletedAt: Timestamp.now(),
+    deletedBy: adminId,
+  });
+}
 
-  /* ============================================================
-      📌 Forum sil
-  ============================================================ */
-  async delete(id) {
-    await FORUMS.doc(id).delete();
-    return true;
-  },
-};
+export async function lockThread(threadId, adminId) {
+  return db.collection("forums").doc(threadId).update({
+    isLocked: true,
+    lockedAt: Timestamp.now(),
+    lockedBy: adminId,
+  });
+}
+
+export async function unlockThread(threadId) {
+  return db.collection("forums").doc(threadId).update({
+    isLocked: false,
+    lockedAt: null,
+    lockedBy: null,
+  });
+}
