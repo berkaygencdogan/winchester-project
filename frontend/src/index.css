@@ -47,3 +47,15 @@ a {
 .input-auth {
   @apply w-full px-3 py-2 rounded-lg bg-[#0F172A] border border-gray-700 focus:border-orange-500 outline-none;
 }
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out;
+}

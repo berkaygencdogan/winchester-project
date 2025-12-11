@@ -14,46 +14,45 @@ export default function LineupsView({ data }) {
   return (
     <div className="space-y-10 mt-6">
       {/* ----------------------------------------------- */}
-      {/* ÜST BİLGİ BÖLÜMÜ */}
+      {/* HOME TEAM */}
       {/* ----------------------------------------------- */}
-      <div className="flex justify-between items-center px-4">
-        {/* LEFT TEAM */}
-        <TeamHeader
-          team={home.team}
-          coach={home.coach}
-          formation={home.formation}
-          align="left"
-        />
+      <TeamHeader
+        team={home.team}
+        coach={home.coach}
+        formation={home.formation}
+        align="left"
+      />
 
-        {/* CENTER SCORE AREA (LineupsView içinde skor yok ama opsiyonel eklenebilir) */}
-        <div className="text-center">
-          <h2 className="text-xl font-bold">Lineups</h2>
-        </div>
-
-        {/* RIGHT TEAM */}
-        <TeamHeader
-          team={away.team}
-          coach={away.coach}
-          formation={away.formation}
-          align="right"
-        />
-      </div>
-
-      {/* ----------------------------------------------- */}
-      {/* FORMATION FIELDS */}
-      {/* ----------------------------------------------- */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* HOME FIELD */}
-        <div>
+      {/* HOME FIELD (Mobil uyumlu, taşımaz) */}
+      <div className="w-full flex justify-center mt-4">
+        <div className="w-full max-w-[320px] sm:max-w-[400px]">
           <FormationView
             formation={home.formation}
             players={home.startXI}
             side="home"
           />
         </div>
+      </div>
 
-        {/* AWAY FIELD */}
-        <div>
+      {/* HOME STARTING XI */}
+      <PlayerList title="Starting XI" list={home.startXI} />
+
+      {/* HOME SUBS */}
+      <PlayerList title="Substitutes" list={home.substitutes} />
+
+      {/* ----------------------------------------------- */}
+      {/* AWAY TEAM */}
+      {/* ----------------------------------------------- */}
+      <TeamHeader
+        team={away.team}
+        coach={away.coach}
+        formation={away.formation}
+        align="right"
+      />
+
+      {/* AWAY FIELD */}
+      <div className="w-full flex justify-center mt-4">
+        <div className="w-full max-w-[320px] sm:max-w-[400px]">
           <FormationView
             formation={away.formation}
             players={away.startXI}
@@ -62,35 +61,20 @@ export default function LineupsView({ data }) {
         </div>
       </div>
 
-      {/* ----------------------------------------------- */}
-      {/* STARTING XI LISTS */}
-      {/* ----------------------------------------------- */}
-      <div className="grid grid-cols-2 gap-6">
-        <PlayerList title="Starting XI" list={home.startXI} />
-        <PlayerList title="Starting XI" list={away.startXI} />
-      </div>
+      {/* AWAY STARTING XI */}
+      <PlayerList title="Starting XI" list={away.startXI} />
 
-      {/* ----------------------------------------------- */}
-      {/* SUBSTITUTES LISTS */}
-      {/* ----------------------------------------------- */}
-      <div className="grid grid-cols-2 gap-6">
-        <PlayerList title="Substitutes" list={home.substitutes} />
-        <PlayerList title="Substitutes" list={away.substitutes} />
-      </div>
+      {/* AWAY SUBS */}
+      <PlayerList title="Substitutes" list={away.substitutes} />
     </div>
   );
 }
 
 /* ----------------------------------------------------- */
-/* TAKIM BAŞLIK ALANI */
+/* TEAM HEADER */
 /* ----------------------------------------------------- */
-
 function TeamHeader({ team, coach, formation, align }) {
-  const logo =
-    team?.logo ||
-    team?.team?.logo || // olası alternatif
-    team?.teamDetails?.logo ||
-    "";
+  const logo = team?.logo || team?.team?.logo || team?.teamDetails?.logo || "";
 
   const name =
     team?.name || team?.team?.name || team?.teamDetails?.name || "Unknown Team";
@@ -115,9 +99,8 @@ function TeamHeader({ team, coach, formation, align }) {
 }
 
 /* ----------------------------------------------------- */
-/* PLAYER LIST TABLE (Starting XI / Substitutes) */
+/* PLAYER LIST */
 /* ----------------------------------------------------- */
-
 function PlayerList({ title, list }) {
   return (
     <div>
