@@ -1,6 +1,12 @@
 export default function ForumListItem({ item }) {
   return (
-    <div className="w-full bg-[#1E293B] p-4 rounded-lg border border-[#273244] hover:bg-[#223044] transition">
+    <div
+      className="
+  w-full p-4 rounded-lg border transition
+  bg-white border-slate-200 hover:bg-slate-50
+  dark:bg-[#1E293B] dark:border-[#273244] dark:hover:bg-[#223044]
+"
+    >
       {/* ÜST KISIM — Avatar + Başlık */}
       <div className="flex items-center gap-4 mb-4">
         {/* Avatar */}
@@ -8,7 +14,13 @@ export default function ForumListItem({ item }) {
           {item.avatar ? (
             <img src={item.avatar} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-[#0F172A] flex items-center justify-center text-xl font-bold">
+            <div
+              className="
+  w-full h-full flex items-center justify-center text-xl font-bold
+  bg-slate-200 text-slate-800
+  dark:bg-[#0F172A] dark:text-white
+"
+            >
               {item.username[0].toUpperCase()}
             </div>
           )}

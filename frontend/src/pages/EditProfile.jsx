@@ -1,110 +1,160 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthProvider";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function EditProfile() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const [bio, setBio] = useState(user.bio || "");
-  const [gender, setGender] = useState(user.gender || "");
-  const [birthYear, setBirthYear] = useState(user.birthYear || "");
-  const [avatarFile, setAvatarFile] = useState(null);
+  const [form, setForm] = useState({
+    nickname: user?.nickname || "",
+    phone: user?.phone || "",
+    gender: user?.gender || "",
+    birthYear: user?.birthYear || "",
+  });
+
   const [loading, setLoading] = useState(false);
 
-  function handleAvatar(e) {
-    const file = e.target.files[0];
-    if (file) setAvatarFile(file);
+  if (!user)
+    return (
+      <p className="text-center text-slate-500 dark:text-gray-400 mt-10">
+        Profil bulunamadı.
+      </p>
+    );
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function save() {
+  async function handleSave() {
     setLoading(true);
-
     try {
-      const form = new FormData();
-      form.append("uid", user.uid);
-      form.append("bio", bio);
-      form.append("gender", gender);
-      form.append("birthYear", birthYear);
-
-      if (avatarFile) {
-        form.append("avatar", avatarFile);
-      }
-
-      const res = await axios.post("/api/upload/avatar", form, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const res = await axios.post("/api/users/update-profile", {
+        ...form,
+        uid: user.uid,
       });
 
-      // Backend yeni avatar URL onarıyor
-      const updatedUser = {
-        ...user,
-        avatar: res.data.avatar,
-        bio,
-        gender,
-        birthYear,
-      };
-
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      alert("Profil güncellendi!");
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      navigate("/profile");
     } catch (err) {
       console.error("Profil güncellenemedi:", err);
-      alert("Profil güncellenemedi.");
+      alert("Bir hata oluştu.");
     }
-
     setLoading(false);
   }
 
   return (
-    <div className="max-w-[700px] mx-auto mt-10 bg-[#1E293B] p-6 rounded-xl space-y-5">
-      <h1 className="text-2xl font-bold text-white">Profil Düzenle</h1>
-
-      {/* Avatar input */}
-      <div>
-        <label className="text-gray-300">Avatar</label>
-        <input type="file" className="block mt-2" onChange={handleAvatar} />
-      </div>
-
-      {/* BIO */}
-      <div>
-        <label className="text-gray-300">Bio</label>
-        <textarea
-          className="w-full mt-1 p-3 rounded-lg bg-[#0F172A] text-white h-32 resize-none"
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-        />
-      </div>
-
-      {/* Gender */}
-      <div>
-        <label className="text-gray-300">Cinsiyet</label>
-        <select
-          className="w-full mt-1 p-3 rounded-lg bg-[#0F172A] text-white"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-        >
-          <option value="">Belirtilmemiş</option>
-          <option value="Erkek">Erkek</option>
-          <option value="Kadın">Kadın</option>
-        </select>
-      </div>
-
-      {/* Birth year */}
-      <div>
-        <label className="text-gray-300">Doğum Yılı</label>
-        <input
-          type="number"
-          className="w-full mt-1 p-3 rounded-lg bg-[#0F172A] text-white"
-          value={birthYear}
-          onChange={(e) => setBirthYear(e.target.value)}
-        />
-      </div>
-
-      <button
-        onClick={save}
-        disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold p-3 rounded-lg"
+    <div className="w-full flex justify-center mt-6 px-3">
+      <div
+        className="
+          w-full max-w-[700px]
+          p-5 sm:p-8 rounded-xl shadow space-y-6
+          bg-white border border-slate-200
+          dark:bg-[#1E293B] dark:border-gray-700
+        "
       >
-        {loading ? "Kaydediliyor..." : "Kaydet"}
-      </button>
+        <h1 className="text-2xl sm:text-3xl font-bold">Profili Düzenle</h1>
+
+        {/* FORM */}
+        <div className="space-y-5">
+          {/* Nickname */}
+          <div>
+            <label className="text-slate-600 dark:text-gray-300 text-sm sm:text-base">
+              Nickname
+            </label>
+            <input
+              name="nickname"
+              value={form.nickname}
+              onChange={handleChange}
+              className="
+                w-full mt-1 p-3 rounded-lg
+                bg-slate-100 border border-slate-300
+                text-slate-900 text-sm sm:text-base
+                outline-none focus:border-orange-500
+                dark:bg-[#0F172A] dark:border-gray-700 dark:text-white
+              "
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="text-slate-600 dark:text-gray-300 text-sm sm:text-base">
+              Telefon
+            </label>
+            <input
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              className="
+                w-full mt-1 p-3 rounded-lg
+                bg-slate-100 border border-slate-300
+                text-slate-900 text-sm sm:text-base
+                outline-none focus:border-orange-500
+                dark:bg-[#0F172A] dark:border-gray-700 dark:text-white
+              "
+            />
+          </div>
+
+          {/* Gender */}
+          <div>
+            <label className="text-slate-600 dark:text-gray-300 text-sm sm:text-base">
+              Cinsiyet
+            </label>
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="
+                w-full mt-1 p-3 rounded-lg
+                bg-slate-100 border border-slate-300
+                text-slate-900 text-sm sm:text-base
+                outline-none
+                dark:bg-[#0F172A] dark:border-gray-700 dark:text-white
+              "
+            >
+              <option value="">Seçiniz</option>
+              <option value="Erkek">Erkek</option>
+              <option value="Kadın">Kadın</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+
+          {/* Birth Year */}
+          <div>
+            <label className="text-slate-600 dark:text-gray-300 text-sm sm:text-base">
+              Doğum Yılı
+            </label>
+            <input
+              name="birthYear"
+              value={form.birthYear}
+              onChange={handleChange}
+              className="
+                w-full mt-1 p-3 rounded-lg
+                bg-slate-100 border border-slate-300
+                text-slate-900 text-sm sm:text-base
+                outline-none focus:border-orange-500
+                dark:bg-[#0F172A] dark:border-gray-700 dark:text-white
+              "
+            />
+          </div>
+
+          {/* SAVE BUTTON */}
+          <button
+            onClick={handleSave}
+            disabled={loading}
+            className="
+              w-full px-6 py-3 rounded-lg font-bold
+              bg-orange-600 hover:bg-orange-700
+              text-white text-sm sm:text-lg
+              transition disabled:opacity-50
+            "
+          >
+            {loading ? "Kaydediliyor..." : "Kaydet"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

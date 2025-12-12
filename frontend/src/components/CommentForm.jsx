@@ -20,7 +20,11 @@ export default function CommentForm({ onSubmit }) {
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="flex-1 bg-[#0F172A] px-3 py-2 rounded-lg outline-none"
+        className="
+    flex-1 px-3 py-2 rounded-lg outline-none
+    bg-white text-slate-900 border border-slate-300
+    dark:bg-[#0F172A] dark:text-white dark:border-gray-700
+  "
         placeholder="Yorum yaz..."
       />
       <button className="bg-orange-600 px-4 rounded-lg" onClick={send}>

@@ -1,7 +1,19 @@
 function CreatePostBox() {
   return (
-    <div className="bg-[#1E293B] p-4 rounded-xl mb-6">
-      <div className="bg-[#0F172A] h-12 rounded-lg border border-[#273244]" />
+    <div
+      className="
+  p-4 rounded-xl mb-6
+  bg-white border border-slate-200
+  dark:bg-[#1E293B] dark:border-[#273244]
+"
+    >
+      <div
+        className="
+    h-12 rounded-lg border
+    bg-slate-100 border-slate-300
+    dark:bg-[#0F172A] dark:border-[#273244]
+  "
+      />
     </div>
   );
 }

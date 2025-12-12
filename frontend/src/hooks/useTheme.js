@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
 
 export default function useTheme() {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  const getInitialTheme = () => {
+    if (typeof window === "undefined") return "dark";
+
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved;
+
+    // Sistem teması
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    return prefersDark ? "dark" : "light";
+  };
+
+  const [theme, setTheme] = useState(getInitialTheme);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -19,5 +33,9 @@ export default function useTheme() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  return { theme, toggleTheme };
+  return {
+    theme,
+    setTheme,
+    toggleTheme,
+  };
 }

@@ -19,22 +19,30 @@ function TeamPlayersBlock({ team, players }) {
     <div>
       <h2 className="text-xl font-bold mb-4">{team.name}</h2>
 
-      <table className="w-full text-left border-separate border-spacing-y-2">
-        <thead className="text-gray-400 text-sm">
-          <tr>
-            <th className="w-10">#</th>
-            <th>Oyuncu</th>
-            <th className="w-24">Pozisyon</th>
-            <th className="w-20 text-center">Rating</th>
-          </tr>
-        </thead>
+      <div
+        className="
+          rounded-xl p-4
+          bg-white border border-slate-200
+          dark:bg-[#1E293B] dark:border-gray-700
+        "
+      >
+        <table className="w-full text-left border-separate border-spacing-y-2">
+          <thead className="text-sm text-slate-500 dark:text-gray-400">
+            <tr>
+              <th className="w-10">#</th>
+              <th>Oyuncu</th>
+              <th className="w-24">Pozisyon</th>
+              <th className="w-20 text-center">Rating</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {players.map((p, i) => (
-            <PlayerRow key={i} player={p} />
-          ))}
-        </tbody>
-      </table>
+          <tbody>
+            {players.map((p, i) => (
+              <PlayerRow key={i} player={p} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -51,25 +59,41 @@ function PlayerRow({ player }) {
   const red = stats.cards?.red || 0;
 
   return (
-    <tr className="bg-[#1E293B] hover:bg-[#273445] transition rounded-lg">
+    <tr
+      className="
+        transition rounded-lg
+        bg-slate-100 hover:bg-slate-200
+        dark:bg-[#1E293B] dark:hover:bg-[#273445]
+      "
+    >
       {/* FORM NO */}
       <td className="px-3 py-2">
-        <div className="w-9 h-9 rounded-full bg-[#0F172A] flex items-center justify-center text-sm font-bold">
+        <div
+          className="
+            w-9 h-9 rounded-full flex items-center justify-center
+            text-sm font-bold
+            bg-slate-200 text-slate-800
+            dark:bg-[#0F172A] dark:text-white
+          "
+        >
           {number}
         </div>
       </td>
 
       {/* OYUNCU ADI + KARTLAR */}
       <td className="px-3 py-2 flex items-center gap-2">
-        <CircleUserRound size={18} className="text-gray-300" />
+        <CircleUserRound
+          size={18}
+          className="text-slate-500 dark:text-gray-300"
+        />
         <span>{player.player?.name || "Unknown"}</span>
 
         {yellow > 0 && <Square size={14} className="text-yellow-400" />}
         {red > 0 && <Square size={14} className="text-red-500" />}
       </td>
 
-      {/* POZISYON */}
-      <td className="px-3 py-2 text-gray-300">{pos}</td>
+      {/* POZİSYON */}
+      <td className="px-3 py-2 text-slate-500 dark:text-gray-300">{pos}</td>
 
       {/* RATING */}
       <td className="px-3 py-2 text-center font-semibold text-yellow-400">

@@ -10,9 +10,17 @@ export default function MatchCard({ match }) {
   const status = fixture.status.short; // "NS" / "1H" / "FT" vs.
 
   return (
-    <div className="bg-[#0F172A] p-3 rounded-lg border border-[#1E2636] hover:border-[#334155] transition mb-3">
+    <div
+      className="
+  p-3 rounded-lg border transition mb-3
+  bg-white border-slate-200 hover:border-slate-300
+  dark:bg-[#0F172A] dark:border-[#1E2636] dark:hover:border-[#334155]
+"
+    >
       {/* LİG ADI */}
-      <div className="text-xs opacity-50 mb-2">{match.league.name}</div>
+      <div className="text-xs text-slate-500 dark:opacity-50 mb-2">
+        {match.league.name}
+      </div>
 
       <div className="flex items-center justify-between">
         {/* TAKIMLAR */}

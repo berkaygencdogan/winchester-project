@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function FixturesPanel() {
   const [fixtures, setFixtures] = useState([]);
-  const [filter, setFilter] = useState("ALL"); // <-- TAB STATE
+  const [filter, setFilter] = useState("ALL");
   const { setSelectedMatchId } = useMatch();
 
   useEffect(() => {
@@ -13,17 +13,14 @@ export default function FixturesPanel() {
       .then((res) => setFixtures(res.data));
   }, []);
 
-  // ---- FİLTRE ----
+  /* ---------------- FILTER ---------------- */
   const filterFixtures = fixtures.filter((match) => {
     const status = match.fixture.status.short;
 
     if (filter === "ALL") return true;
-
     if (filter === "LIVE")
       return ["1H", "2H", "HT", "ET", "P", "LIVE"].includes(status);
-
     if (filter === "FINISHED") return ["FT", "AET", "PEN"].includes(status);
-
     if (filter === "SCHEDULED") return status === "NS";
 
     return true;
@@ -31,32 +28,41 @@ export default function FixturesPanel() {
 
   return (
     <div className="p-3">
-      {/* TAB BAR */}
+      {/* ================= TAB BAR ================= */}
       <div className="flex gap-3 mb-3">
         {["ALL", "LIVE", "FINISHED", "SCHEDULED"].map((t) => (
           <button
             key={t}
             onClick={() => setFilter(t)}
-            className={`px-4 py-1 rounded-md text-sm transition 
+            className={`px-4 py-1 rounded-md text-sm transition
               ${
                 filter === t
                   ? "bg-orange-600 text-white"
-                  : "bg-[#1B2534] hover:bg-[#223044]"
-              }`}
+                  : `
+                    bg-slate-100 text-slate-700 hover:bg-slate-200
+                    dark:bg-[#1B2534] dark:text-gray-300 dark:hover:bg-[#223044]
+                  `
+              }
+            `}
           >
             {t}
           </button>
         ))}
       </div>
 
-      {/* MAÇ LİSTESİ */}
+      {/* ================= MATCH LIST ================= */}
       {filterFixtures.map((match) => (
         <div
           key={match.fixture.id}
           onClick={() => setSelectedMatchId(match.fixture.id)}
-          className="mb-4 bg-[#1B2534] p-3 rounded-md cursor-pointer hover:bg-[#273244]"
+          className="
+            mb-4 p-3 rounded-md cursor-pointer transition
+            bg-white border border-slate-200 hover:bg-slate-50
+            dark:bg-[#1B2534] dark:border-gray-700 dark:hover:bg-[#273244]
+          "
         >
-          <div className="text-xs text-green-400 font-bold mb-1">
+          {/* STATUS */}
+          <div className="text-xs font-bold mb-1 text-green-600 dark:text-green-400">
             {match.fixture.status.short}
           </div>
 
@@ -68,6 +74,7 @@ export default function FixturesPanel() {
   );
 }
 
+/* ================= TEAM ROW ================= */
 function TeamRow({ team, goals }) {
   return (
     <div className="flex justify-between items-center py-1">
@@ -75,7 +82,8 @@ function TeamRow({ team, goals }) {
         <img src={team.logo} className="w-5 h-5" />
         <span>{team.name}</span>
       </div>
-      <span>{goals ?? "-"}</span>
+
+      <span className="font-semibold">{goals ?? "-"}</span>
     </div>
   );
 }

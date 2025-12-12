@@ -14,14 +14,12 @@ export default function MobileNav() {
   return (
     <div
       className="
-      fixed bottom-0 left-0 right-0
-      bg-white dark:bg-[#1E293B]
-      border-t border-gray-300 dark:border-gray-700
-      flex justify-around items-center
-      py-2
-      md:hidden 
-      z-50
-    "
+    fixed bottom-0 left-0 right-0
+    bg-white dark:bg-[#1E293B]
+    border-t border-slate-200 dark:border-gray-700
+    flex justify-around items-center
+    py-2 md:hidden z-50
+  "
     >
       {tabs.map((tab) => {
         const isActive = pathname === tab.path;

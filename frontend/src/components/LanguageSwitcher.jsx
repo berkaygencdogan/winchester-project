@@ -20,7 +20,11 @@ export default function LanguageSwitcher() {
 
   return (
     <select
-      className="bg-[#1E293B] text-white p-2 rounded-md"
+      className="
+    p-2 rounded-md
+    bg-white text-slate-800 border border-slate-300
+    dark:bg-[#1E293B] dark:text-white dark:border-gray-700
+  "
       value={currentLang}
       onChange={(e) => {
         i18n.changeLanguage(e.target.value);

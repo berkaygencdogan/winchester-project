@@ -87,9 +87,13 @@ export default function MatchDetailPanel() {
           <button
             key={t}
             onClick={() => setActiveTab(t)}
-            className={`px-4 py-1 rounded-lg ${
-              activeTab === t ? "bg-orange-600" : "bg-[#1B2534]"
-            }`}
+            className={`px-4 py-1 rounded-lg transition
+  ${
+    activeTab === t
+      ? "bg-orange-600 text-white"
+      : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-[#1B2534] dark:text-gray-300"
+  }
+`}
           >
             {t}
           </button>

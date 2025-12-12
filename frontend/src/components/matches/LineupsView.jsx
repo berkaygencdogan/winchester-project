@@ -3,7 +3,7 @@ import FormationView from "./FormationView";
 export default function LineupsView({ data }) {
   if (!data || data.length === 0) {
     return (
-      <div className="text-center text-gray-400 py-6">
+      <div className="text-center text-slate-500 dark:text-gray-400 py-6">
         Diziliş bilgisi bulunamadı.
       </div>
     );
@@ -13,9 +13,7 @@ export default function LineupsView({ data }) {
 
   return (
     <div className="space-y-10 mt-6">
-      {/* ----------------------------------------------- */}
-      {/* HOME TEAM */}
-      {/* ----------------------------------------------- */}
+      {/* ================= HOME TEAM ================= */}
       <TeamHeader
         team={home.team}
         coach={home.coach}
@@ -23,7 +21,7 @@ export default function LineupsView({ data }) {
         align="left"
       />
 
-      {/* HOME FIELD (Mobil uyumlu, taşımaz) */}
+      {/* HOME FIELD */}
       <div className="w-full flex justify-center mt-4">
         <div className="w-full max-w-[320px] sm:max-w-[400px]">
           <FormationView
@@ -40,9 +38,7 @@ export default function LineupsView({ data }) {
       {/* HOME SUBS */}
       <PlayerList title="Substitutes" list={home.substitutes} />
 
-      {/* ----------------------------------------------- */}
-      {/* AWAY TEAM */}
-      {/* ----------------------------------------------- */}
+      {/* ================= AWAY TEAM ================= */}
       <TeamHeader
         team={away.team}
         coach={away.coach}
@@ -70,15 +66,13 @@ export default function LineupsView({ data }) {
   );
 }
 
-/* ----------------------------------------------------- */
-/* TEAM HEADER */
-/* ----------------------------------------------------- */
+/* ======================================================
+   TEAM HEADER
+====================================================== */
 function TeamHeader({ team, coach, formation, align }) {
   const logo = team?.logo || team?.team?.logo || team?.teamDetails?.logo || "";
-
   const name =
     team?.name || team?.team?.name || team?.teamDetails?.name || "Unknown Team";
-
   const coachName = coach?.name || "Unknown Coach";
 
   return (
@@ -91,27 +85,35 @@ function TeamHeader({ team, coach, formation, align }) {
 
       <div>
         <p className="text-lg font-bold">{name}</p>
-        <p className="text-gray-300 text-sm">Coach: {coachName}</p>
-        <p className="text-orange-400 font-semibold">{formation || "-"}</p>
+        <p className="text-sm text-slate-500 dark:text-gray-300">
+          Coach: {coachName}
+        </p>
+        <p className="text-orange-500 font-semibold">{formation || "-"}</p>
       </div>
     </div>
   );
 }
 
-/* ----------------------------------------------------- */
-/* PLAYER LIST */
-/* ----------------------------------------------------- */
+/* ======================================================
+   PLAYER LIST
+====================================================== */
 function PlayerList({ title, list }) {
   return (
     <div>
       <h3 className="text-lg font-semibold mb-3">{title}</h3>
 
-      <div className="bg-[#1E293B] rounded-xl p-4 shadow-lg">
+      <div
+        className="
+          rounded-xl p-4
+          bg-white border border-slate-200
+          dark:bg-[#1E293B] dark:border-gray-700
+        "
+      >
         {list.length === 0 ? (
-          <p className="text-gray-400 text-sm">Veri yok.</p>
+          <p className="text-sm text-slate-500 dark:text-gray-400">Veri yok.</p>
         ) : (
           <table className="w-full text-left border-separate border-spacing-y-2">
-            <thead className="text-gray-400 text-sm">
+            <thead className="text-sm text-slate-500 dark:text-gray-400">
               <tr>
                 <th className="w-10">#</th>
                 <th>Oyuncu</th>
@@ -123,7 +125,11 @@ function PlayerList({ title, list }) {
               {list.map((p, i) => (
                 <tr
                   key={i}
-                  className="bg-[#243244] hover:bg-[#2d3b4f] transition rounded-lg"
+                  className="
+                    transition rounded-lg
+                    bg-slate-100 hover:bg-slate-200
+                    dark:bg-[#243244] dark:hover:bg-[#2d3b4f]
+                  "
                 >
                   <td className="px-3 py-2">{p.player.number}</td>
                   <td className="px-3 py-2">{p.player.name}</td>

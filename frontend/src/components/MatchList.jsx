@@ -29,9 +29,28 @@ export default function MatchList() {
     return (
       <div className="space-y-3 p-3">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="p-2 bg-[#1E293B] rounded-lg">
-            <Skeleton className="h-4 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-1/2" />
+          <div
+            key={i}
+            className="
+  p-2 rounded-lg
+  bg-slate-100
+  dark:bg-[#1E293B]
+"
+          >
+            <Skeleton
+              className="
+  p-2 rounded-lg
+  bg-slate-100
+  dark:bg-[#1E293B]
+"
+            />
+            <Skeleton
+              className="
+  p-2 rounded-lg
+  bg-slate-100
+  dark:bg-[#1E293B]
+"
+            />
           </div>
         ))}
       </div>
@@ -48,7 +67,11 @@ export default function MatchList() {
         <div
           key={m.fixture.id}
           onClick={() => handleClick(m)} // ← MAÇA TIKLA → DETAY AÇ
-          className="bg-[#1E293B] rounded-lg p-3 cursor-pointer hover:bg-[#233044] transition"
+          className="
+    rounded-lg p-3 cursor-pointer transition
+    bg-white border border-slate-200 hover:bg-slate-50
+    dark:bg-[#1E293B] dark:hover:bg-[#233044] dark:border-gray-700
+  "
         >
           <p className="text-sm text-gray-400">{m.league.name}</p>
 

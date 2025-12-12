@@ -27,10 +27,13 @@ export default function EventsView({ data, info }) {
             } items-center`}
           >
             <div
-              className={`bg-[#1A2332] px-3 py-2 rounded-md shadow-md w-fit
-              flex items-center gap-2
-              ${isAway ? "flex-row-reverse text-right ml-auto" : "mr-auto"}
-            `}
+              className={`
+  px-3 py-2 rounded-md shadow-md w-fit
+  flex items-center gap-2
+  bg-white border border-slate-200
+  dark:bg-[#1A2332] dark:border-gray-700
+  ${isAway ? "flex-row-reverse text-right ml-auto" : "mr-auto"}
+`}
             >
               {/* ICON */}
               <EventIcon
@@ -45,14 +48,18 @@ export default function EventsView({ data, info }) {
                 <p className="font-semibold">{e.player?.name}</p>
 
                 {e.assist?.name && (
-                  <p className="text-xs text-gray-400">{e.assist.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-400">
+                    {e.assist.name}
+                  </p>
                 )}
 
-                <p className="text-xs text-gray-400">{formatDetail(e)}</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400">
+                  {formatDetail(e)}
+                </p>
               </div>
 
               {/* MINUTE */}
-              <span className="text-xs text-gray-400 ml-2">
+              <span className="text-xs text-slate-500 dark:text-gray-400 ml-2">
                 {e.time.elapsed}'
               </span>
             </div>

@@ -26,27 +26,21 @@ export default function RegisterModal({ onClose }) {
 
   async function handleRegister() {
     try {
-      // 1) Firebase user oluştur
       const fbUser = await createUserWithEmailAndPassword(
         auth,
         form.email,
         form.password
       );
 
-      // 2) Doğrulama maili gönder
       await sendEmailVerification(fbUser.user);
 
-      // 3) Backend’e kaydet (OTOMATİK LOGIN YOK!)
       await axios.post(`${API}/register`, {
         ...form,
         uid: fbUser.user.uid,
       });
 
       setSuccessMsg("Kayıt başarılı! Email doğrulaması gönderildi.");
-
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      setTimeout(onClose, 2000);
     } catch (err) {
       alert(err.response?.data?.error || err.message);
     }
@@ -54,15 +48,21 @@ export default function RegisterModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-[#1E293B] p-6 rounded-xl w-[380px] relative text-white shadow-xl border border-gray-600">
+      <div
+        className="
+          relative w-[380px] p-6 rounded-xl shadow-xl
+          bg-white text-slate-900 border border-slate-300
+          dark:bg-[#1E293B] dark:text-white dark:border-gray-600
+        "
+      >
         {successMsg && (
-          <div className="mb-3 bg-green-600/40 text-white p-2 rounded-md text-center">
+          <div className="mb-3 bg-green-600/40 p-2 rounded-md text-center">
             {successMsg}
           </div>
         )}
 
         <button
-          className="absolute right-3 top-3 text-gray-300 hover:text-white"
+          className="absolute right-3 top-3 text-slate-500 hover:text-black dark:text-gray-300 dark:hover:text-white"
           onClick={onClose}
         >
           <X size={22} />
@@ -71,54 +71,34 @@ export default function RegisterModal({ onClose }) {
         <h2 className="text-2xl font-bold mb-4 text-center">Kayıt Ol</h2>
 
         <div className="space-y-3">
-          <input
-            className="input-auth"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="password"
-            type="password"
-            placeholder="Şifre"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="phone"
-            placeholder="Telefon (+90...)"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="username"
-            placeholder="Ad Soyad"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="nickname"
-            placeholder="Nick"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="birthYear"
-            placeholder="Doğum Yılı"
-            onChange={handleChange}
-          />
-          <input
-            className="input-auth"
-            name="gender"
-            placeholder="Cinsiyet"
-            onChange={handleChange}
-          />
+          {[
+            ["email", "Email"],
+            ["password", "Şifre"],
+            ["phone", "Telefon (+90...)"],
+            ["username", "Ad Soyad"],
+            ["nickname", "Nick"],
+            ["birthYear", "Doğum Yılı"],
+            ["gender", "Cinsiyet"],
+          ].map(([name, placeholder]) => (
+            <input
+              key={name}
+              name={name}
+              placeholder={placeholder}
+              onChange={handleChange}
+              type={name === "password" ? "password" : "text"}
+              className="
+                w-full px-3 py-2 rounded-lg outline-none
+                bg-slate-100 border border-slate-300 text-slate-900
+                focus:border-orange-500
+                dark:bg-[#0F172A] dark:border-gray-700 dark:text-white
+              "
+            />
+          ))}
         </div>
 
         <button
-          className="w-full bg-orange-600 hover:bg-orange-700 transition py-2 mt-4 rounded-lg font-semibold"
           onClick={handleRegister}
+          className="w-full bg-orange-600 hover:bg-orange-700 transition py-2 mt-4 rounded-lg font-semibold text-white"
         >
           Kayıt Ol
         </button>

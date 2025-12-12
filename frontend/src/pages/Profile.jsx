@@ -6,7 +6,11 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("topics"); // ⭐ Varsayılan TAB
 
   if (!user)
-    return <p className="text-center text-gray-400 mt-10">Yükleniyor...</p>;
+    return (
+      <p className="text-center text-slate-500 dark:text-gray-400 mt-10">
+        Yükleniyor...
+      </p>
+    );
 
   const forumAge = getForumAge(user.createdAt);
   const age = user.birthYear
@@ -15,9 +19,22 @@ export default function Profile() {
 
   return (
     <div className="max-w-[1100px] mx-auto mt-6 px-4 space-y-6">
-      <div className="bg-[#1E293B] p-6 rounded-xl shadow flex flex-col sm:flex-row gap-6">
+      <div
+        className="
+          bg-white dark:bg-[#1E293B]
+          p-6 rounded-xl shadow
+          flex flex-col sm:flex-row gap-6
+          border border-slate-200 dark:border-gray-700
+        "
+      >
         <div className="flex flex-col items-center w-full sm:w-[220px]">
-          <div className="w-28 h-28 rounded-full overflow-hidden bg-[#0F172A] flex items-center justify-center">
+          <div
+            className="
+              w-28 h-28 rounded-full overflow-hidden
+              bg-slate-200 dark:bg-[#0F172A]
+              flex items-center justify-center
+            "
+          >
             {user.avatar ? (
               <img
                 src={user.avatar}
@@ -25,13 +42,15 @@ export default function Profile() {
                 alt={user.nickname}
               />
             ) : (
-              <span className="text-4xl text-gray-300">
+              <span className="text-4xl text-slate-700 dark:text-gray-300">
                 {user.nickname.charAt(0).toUpperCase()}
               </span>
             )}
           </div>
 
-          <p className="mt-2 text-xl font-bold">{user.nickname}</p>
+          <p className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
+            {user.nickname}
+          </p>
 
           <span className="mt-1 text-xs bg-purple-600 text-white px-2 py-1 rounded-md">
             Üye
@@ -40,13 +59,17 @@ export default function Profile() {
 
         <div className="flex-1 space-y-3">
           <div>
-            <p className="text-gray-400">Son Görülme</p>
-            <p className="text-white font-semibold">Bilinmiyor</p>
+            <p className="text-slate-500 dark:text-gray-400">Son Görülme</p>
+            <p className="text-slate-900 dark:text-white font-semibold">
+              Bilinmiyor
+            </p>
           </div>
 
           <div>
-            <p className="text-gray-400">Şu anki Aktivite</p>
-            <p className="text-white font-semibold">
+            <p className="text-slate-500 dark:text-gray-400">
+              Şu anki Aktivite
+            </p>
+            <p className="text-slate-900 dark:text-white font-semibold">
               {user.nickname} adlı kullanıcının profilini görüntülüyor
             </p>
           </div>
@@ -109,7 +132,13 @@ export default function Profile() {
       {/* ====================================== */}
       {/* KULLANICI BİLGİLERİ */}
       {/* ====================================== */}
-      <div className="bg-[#1E293B] p-6 rounded-xl shadow space-y-3">
+      <div
+        className="
+          bg-white dark:bg-[#1E293B]
+          p-6 rounded-xl shadow space-y-3
+          border border-slate-200 dark:border-gray-700
+        "
+      >
         <InfoRow label="Forum Yaşı" value={forumAge} />
         <InfoRow label="Cinsiyet" value={user.gender} />
         <InfoRow
@@ -125,7 +154,13 @@ export default function Profile() {
       {/* ====================================== */}
       {/* DİNAMİK İÇERİK ALANI */}
       {/* ====================================== */}
-      <div className="bg-[#1E293B] p-6 rounded-xl shadow text-white">
+      <div
+        className="
+          bg-white dark:bg-[#1E293B]
+          p-6 rounded-xl shadow
+          border border-slate-200 dark:border-gray-700
+        "
+      >
         {activeTab === "topics" && <TopicList />}
         {activeTab === "messages" && <MessageList />}
         {activeTab === "likes" && <LikeList />}
@@ -146,11 +181,11 @@ function TabBox({ label, value, active, onClick }) {
       onClick={onClick}
       className={`
         cursor-pointer p-4 rounded-xl shadow 
-        transition border 
+        transition border
         ${
           active
             ? "bg-orange-500 border-orange-400 text-black"
-            : "bg-[#1E293B] border-gray-700 text-white"
+            : "bg-white dark:bg-[#1E293B] border-slate-200 dark:border-gray-700 text-slate-900 dark:text-white"
         }
       `}
     >
@@ -162,9 +197,9 @@ function TabBox({ label, value, active, onClick }) {
 
 function InfoRow({ label, value }) {
   return (
-    <div className="flex justify-between items-center border-b border-gray-700 pb-2">
-      <p className="text-gray-300">{label}</p>
-      <p className="text-white font-semibold">{value}</p>
+    <div className="flex justify-between items-center border-b border-slate-200 dark:border-gray-700 pb-2">
+      <p className="text-slate-600 dark:text-gray-300">{label}</p>
+      <p className="text-slate-900 dark:text-white font-semibold">{value}</p>
     </div>
   );
 }
@@ -197,28 +232,36 @@ function TopicList() {
   ];
 
   if (topics.length === 0)
-    return <p className="text-gray-400">Bu kullanıcı hiç konu açmamış.</p>;
+    return (
+      <p className="text-slate-500 dark:text-gray-400">
+        Bu kullanıcı hiç konu açmamış.
+      </p>
+    );
 
   return (
     <div className="space-y-3">
       {topics.map((t) => (
         <div
           key={t.id}
-          className="p-4 bg-[#0F172A] rounded-lg flex justify-between items-center"
+          className="
+            p-4 rounded-lg flex justify-between items-center
+            bg-slate-100 dark:bg-[#0F172A]
+          "
         >
           <div>
             <p className="font-bold">{t.title}</p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-slate-500 dark:text-gray-400 text-sm">
               {t.replies} cevap • {t.views} görüntülenme
             </p>
           </div>
 
-          <span className="text-gray-500">#{t.id}</span>
+          <span className="text-slate-400 dark:text-gray-500">#{t.id}</span>
         </div>
       ))}
     </div>
   );
 }
+
 function MessageList() {
   const messages = [
     {
@@ -236,20 +279,32 @@ function MessageList() {
   ];
 
   if (messages.length === 0)
-    return <p className="text-gray-400">Bu kullanıcı hiç mesaj yazmamış.</p>;
+    return (
+      <p className="text-slate-500 dark:text-gray-400">
+        Bu kullanıcı hiç mesaj yazmamış.
+      </p>
+    );
 
   return (
     <div className="space-y-4">
       {messages.map((m) => (
-        <div key={m.id} className="bg-[#0F172A] p-4 rounded-lg">
-          <p className="text-sm text-gray-400">{m.thread}</p>
+        <div
+          key={m.id}
+          className="bg-slate-100 dark:bg-[#0F172A] p-4 rounded-lg"
+        >
+          <p className="text-sm text-slate-500 dark:text-gray-400">
+            {m.thread}
+          </p>
           <p className="font-medium mt-1">{m.text}</p>
-          <p className="text-gray-500 text-xs mt-2">{m.date}</p>
+          <p className="text-slate-400 dark:text-gray-500 text-xs mt-2">
+            {m.date}
+          </p>
         </div>
       ))}
     </div>
   );
 }
+
 function LikeList() {
   const likes = [
     {
@@ -266,20 +321,28 @@ function LikeList() {
 
   if (likes.length === 0)
     return (
-      <p className="text-gray-400">Bu kullanıcı hiçbir gönderiyi beğenmemiş.</p>
+      <p className="text-slate-500 dark:text-gray-400">
+        Bu kullanıcı hiçbir gönderiyi beğenmemiş.
+      </p>
     );
 
   return (
     <div className="space-y-4">
       {likes.map((l) => (
-        <div key={l.id} className="bg-[#0F172A] p-4 rounded-lg">
+        <div
+          key={l.id}
+          className="bg-slate-100 dark:bg-[#0F172A] p-4 rounded-lg"
+        >
           <p className="font-semibold">{l.text}</p>
-          <p className="text-gray-500 text-sm mt-1">— {l.author}</p>
+          <p className="text-slate-500 dark:text-gray-400 text-sm mt-1">
+            — {l.author}
+          </p>
         </div>
       ))}
     </div>
   );
 }
+
 function FollowerList() {
   const followers = [
     { id: 1, name: "emre45" },
@@ -287,16 +350,21 @@ function FollowerList() {
   ];
 
   if (followers.length === 0)
-    return <p className="text-gray-400">Hiç takipçisi yok.</p>;
+    return (
+      <p className="text-slate-500 dark:text-gray-400">Hiç takipçisi yok.</p>
+    );
 
   return (
     <div className="space-y-2">
       {followers.map((f) => (
         <div
           key={f.id}
-          className="bg-[#0F172A] p-3 rounded-lg flex items-center gap-3"
+          className="
+            bg-slate-100 dark:bg-[#0F172A]
+            p-3 rounded-lg flex items-center gap-3
+          "
         >
-          <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-slate-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-white">
             {f.name.charAt(0).toUpperCase()}
           </div>
           <p>{f.name}</p>
@@ -305,6 +373,7 @@ function FollowerList() {
     </div>
   );
 }
+
 function FollowingList() {
   const following = [
     { id: 1, name: "berkx" },
@@ -312,16 +381,23 @@ function FollowingList() {
   ];
 
   if (following.length === 0)
-    return <p className="text-gray-400">Hiçbir kullanıcıyı takip etmiyor.</p>;
+    return (
+      <p className="text-slate-500 dark:text-gray-400">
+        Hiçbir kullanıcıyı takip etmiyor.
+      </p>
+    );
 
   return (
     <div className="space-y-2">
       {following.map((f) => (
         <div
           key={f.id}
-          className="bg-[#0F172A] p-3 rounded-lg flex items-center gap-3"
+          className="
+            bg-slate-100 dark:bg-[#0F172A]
+            p-3 rounded-lg flex items-center gap-3
+          "
         >
-          <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-slate-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-white">
             {f.name.charAt(0).toUpperCase()}
           </div>
           <p>{f.name}</p>

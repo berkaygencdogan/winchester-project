@@ -1,52 +1,78 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  @apply bg-gray-100 text-gray-800 transition-colors duration-500;
+  @apply bg-slate-50 text-slate-900 transition-colors duration-300;
 }
 
+/* DARK MODE */
 .dark body {
-  @apply bg-gray-950 text-white; /* ✅ yazılar artık açık renk */
+  @apply bg-gray-950 text-white;
 }
 
-/* Navbar için destek */
 nav {
-  @apply transition-colors duration-500;
+  @apply transition-colors duration-500 bg-white border-b border-slate-200;
 }
 
 .dark nav {
-  @apply bg-gray-900 text-white;
+  @apply bg-gray-900 border-gray-700 text-white;
 }
 
-/* Link'ler için genel renk */
 a {
-  @apply text-gray-100 hover:text-blue-600 dark:hover:text-yellow-400;
+  @apply text-blue-600 hover:text-blue-800 transition-colors;
+}
+
+.dark a {
+  @apply text-gray-100 hover:text-yellow-400;
+}
+
+.card {
+  @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+}
+
+.dark .card {
+  @apply bg-slate-900 border-slate-700;
+}
+
+.input-auth {
+  @apply w-full px-3 py-2 rounded-lg
+    bg-white text-slate-900
+    border border-slate-300
+    focus:border-blue-500
+    outline-none transition;
+}
+
+.dark .input-auth {
+  @apply bg-[#0F172A] text-white border-gray-700 focus:border-orange-500;
 }
 
 .custom-scroll::-webkit-scrollbar {
   width: 6px;
 }
+
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 6px;
 }
+
+.dark .custom-scroll::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
 .field-grid {
   background: linear-gradient(
       to bottom,
-      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.08) 0%,
       rgba(255, 255, 255, 0) 20%
     ),
     linear-gradient(
       to top,
-      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.08) 0%,
       rgba(255, 255, 255, 0) 20%
     ),
     #1f7a1f;
   background-size: cover;
 }
-.input-auth {
-  @apply w-full px-3 py-2 rounded-lg bg-[#0F172A] border border-gray-700 focus:border-orange-500 outline-none;
-}
+
 @keyframes slideUp {
   from {
     transform: translateY(100%);

@@ -14,9 +14,11 @@ import EditProfile from "./pages/EditProfile";
 
 function App() {
   const adblock = useAdblockDetector();
+
+  /* ================= ADBLOCK OVERLAY ================= */
   if (adblock) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-red-500 z-[999999] backdrop-blur-xl select-none">
+      <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center text-red-500 z-[999999] backdrop-blur-xl select-none">
         <div className="animate-pulse text-6xl font-extrabold tracking-widest">
           🚫 AD BLOCK DETECTED 🚫
         </div>
@@ -25,11 +27,11 @@ function App() {
           Reklam engelleyici aktif olduğu için siteye erişiminiz engellendi.
           <br />
           <span className="text-red-300 font-bold">
-            Lütfen AdBlock'u devre dışı bırakıp sayfayı yenileyin.
+            Lütfen AdBlock&apos;u devre dışı bırakıp sayfayı yenileyin.
           </span>
         </p>
 
-        <div className="mt-10 text-red-600 text-lg font-mono border border-red-700 px-6 py-3 rounded-lg bg-black bg-opacity-40">
+        <div className="mt-10 text-red-600 text-lg font-mono border border-red-700 px-6 py-3 rounded-lg bg-black/40">
           ERROR CODE: 403–ADBLOCK–BLOCKED
         </div>
 
@@ -39,22 +41,25 @@ function App() {
       </div>
     );
   }
+
+  /* ================= APP ================= */
   return (
     <AuthProvider>
-      <div className="bg-[#0F172A] text-white min-h-screen relative">
-        <Navbar />
+      <Navbar />
 
-        <Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/matches/:id" element={<Matches />} />
-          <Route path="/matches/" element={<Matches />} />
-          <Route path="/forum" element={<Forum />} />
-          <Route path="/forum/:id" element={<ForumDetail />} />
-          <Route path="/create-thread" element={<CreateThread />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/matches" element={<Matches />} />
+        <Route path="/matches/:id" element={<Matches />} />
+
+        <Route path="/forum" element={<Forum />} />
+        <Route path="/forum/:id" element={<ForumDetail />} />
+        <Route path="/create-thread" element={<CreateThread />} />
+
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
+      </Routes>
+
       <MobileNav />
     </AuthProvider>
   );
