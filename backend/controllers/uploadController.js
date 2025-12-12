@@ -1,33 +1,44 @@
 import multer from "multer";
 import path from "path";
-
-// Upload klasörü yoksa oluştur
 import fs from "fs";
-if (!fs.existsSync("./uploads")) {
-  fs.mkdirSync("./uploads");
+import { db } from "../firebase/firebaseAdmin.js";
+
+const avatarDir = "./uploads/avatars";
+if (!fs.existsSync(avatarDir)) {
+  fs.mkdirSync(avatarDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, "./uploads/");
+    cb(null, avatarDir);
   },
   filename(req, file, cb) {
-    cb(null, "IMG_" + Date.now() + path.extname(file.originalname));
+    const uid = req.body.uid;
+    cb(null, `${uid}.jpg`);
   },
 });
 
-const upload = multer({ storage });
+export const uploadAvatar = multer({ storage }).single("avatar");
 
-// Single upload route
-export const uploadSingle = upload.single("image");
+export async function updateAvatar(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Dosya yüklenmedi" });
+    }
 
-// Response controller
-export function uploadResponse(req, res) {
-  if (!req.file) {
-    return res.status(400).json({ error: "Dosya yüklenmedi" });
+    const { uid, bio, gender, birthYear } = req.body;
+    const avatarUrl = `${process.env.SERVER_URL}/uploads/avatars/${uid}.jpg`;
+
+    await db.collection("users").doc(uid).update({
+      avatar: avatarUrl,
+      bio,
+      gender,
+      birthYear,
+    });
+
+    res.json({ success: true, avatar: avatarUrl });
+  } catch (err) {
+    console.error("PROFILE UPDATE ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
-
-  res.json({
-    url: `/uploads/${req.file.filename}`,
-  });
 }

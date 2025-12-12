@@ -9,6 +9,8 @@ import CreateThread from "./pages/CreateThread";
 import { AuthProvider } from "./context/AuthProvider";
 import useAdblockDetector from "./hooks/useAdblockDetector";
 import MobileNav from "./components/MobileNav";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
   const adblock = useAdblockDetector();
@@ -49,6 +51,8 @@ function App() {
           <Route path="/forum" element={<Forum />} />
           <Route path="/forum/:id" element={<ForumDetail />} />
           <Route path="/create-thread" element={<CreateThread />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
         </Routes>
       </div>
       <MobileNav />

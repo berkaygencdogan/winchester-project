@@ -13,11 +13,9 @@ export default function ForumDetail() {
   const user = JSON.parse(localStorage.getItem("user")) || null;
   const isAdmin = user?.role === "admin";
 
-  // PAGINATION
   const totalPages = Math.ceil(comments.length / PAGE_SIZE);
   const paginated = comments.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // THREAD + COMMENTS LOAD
   useEffect(() => {
     async function load() {
       try {
@@ -33,7 +31,6 @@ export default function ForumDetail() {
     load();
   }, [id]);
 
-  // ------------------- MODERATION -------------------
   async function lockThread() {
     await axios.post(`/api/forums/${id}/lock`, { adminId: user.uid });
     setThread((t) => ({ ...t, isLocked: true }));
@@ -49,7 +46,6 @@ export default function ForumDetail() {
     alert("Konu silindi.");
   }
 
-  // ------------------- COMMENT SEND -------------------
   async function handleSend(message) {
     if (!message.trim()) return;
 
@@ -59,7 +55,6 @@ export default function ForumDetail() {
       message,
     });
 
-    // yorum eklendikten sonra tekrar yükle
     const res = await axios.get(`/api/comments/${id}`);
     setComments(res.data.comments);
   }
@@ -68,8 +63,7 @@ export default function ForumDetail() {
     return <p className="text-center text-gray-400 mt-10">Yükleniyor...</p>;
 
   return (
-    <div className="max-w-[1100px] mx-auto mt-6 space-y-6">
-      {/* ---------------- HEADER ---------------- */}
+    <div className="max-w-[1100px] mx-auto mt-6 px-3 space-y-6 pb-28">
       <div className="bg-[#1E293B] p-5 rounded-xl shadow relative">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           {thread.isLocked && <span className="text-red-400 text-xl">🔒</span>}
@@ -80,9 +74,21 @@ export default function ForumDetail() {
           {thread.authorName} • {thread.categoryId}
         </div>
 
-        {/* MOD MENU */}
+        {/* Mobile Moderation Button */}
         {isAdmin && (
-          <div className="absolute right-4 top-4">
+          <div className="mt-4 md:hidden">
+            <ModerationMenu
+              thread={thread}
+              lockThread={lockThread}
+              unlockThread={unlockThread}
+              deleteThread={deleteThread}
+            />
+          </div>
+        )}
+
+        {/* Desktop Moderation Menu */}
+        {isAdmin && (
+          <div className="absolute right-4 top-4 hidden md:block">
             <ModerationMenu
               thread={thread}
               lockThread={lockThread}
@@ -107,7 +113,6 @@ export default function ForumDetail() {
         />
       ))}
 
-      {/* ---------------- PAGE NUMBERS ---------------- */}
       {totalPages > 1 && (
         <Pagination total={totalPages} page={page} setPage={setPage} />
       )}
@@ -122,9 +127,7 @@ export default function ForumDetail() {
           </p>
         )
       ) : (
-        <p className="text-center text-red-400 text-lg">
-          🔒 Bu konu kilitli. Yeni yorum eklenemez.
-        </p>
+        <p className="text-center text-red-400 text-lg">🔒 Bu konu kilitli.</p>
       )}
     </div>
   );
@@ -141,14 +144,14 @@ function ModerationMenu({ thread, lockThread, unlockThread, deleteThread }) {
       {!thread.isLocked ? (
         <button
           onClick={lockThread}
-          className="block text-left w-full text-red-400 hover:text-red-300"
+          className="block w-full text-left text-red-400"
         >
           Konuyu Kilitle
         </button>
       ) : (
         <button
           onClick={unlockThread}
-          className="block text-left w-full text-green-400 hover:text-green-300"
+          className="block w-full text-left text-green-400"
         >
           Kilidi Aç
         </button>
@@ -156,7 +159,7 @@ function ModerationMenu({ thread, lockThread, unlockThread, deleteThread }) {
 
       <button
         onClick={deleteThread}
-        className="block text-left w-full text-yellow-400 hover:text-yellow-300"
+        className="block w-full text-left text-yellow-400"
       >
         Konuyu Sil
       </button>
@@ -169,7 +172,7 @@ function ModerationMenu({ thread, lockThread, unlockThread, deleteThread }) {
 ====================================================== */
 function Pagination({ total, page, setPage }) {
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-center md:justify-end gap-2">
       {[...Array(total)].map((_, i) => (
         <button
           key={i}
@@ -188,31 +191,35 @@ function Pagination({ total, page, setPage }) {
 }
 
 /* ======================================================
-   POST ITEM
+   POST ITEM (RESPONSIVE)
 ====================================================== */
 function PostItem({ post, index }) {
   return (
-    <div className="bg-[#1E293B] p-5 rounded-xl shadow flex gap-6 relative">
+    <div
+      className="
+        bg-[#1E293B] p-5 rounded-xl shadow relative 
+        flex flex-col md:flex-row gap-6
+      "
+    >
       <div className="absolute right-4 top-3 text-gray-400 text-xs">
         #{index}
       </div>
 
-      {/* Sol Profil Kartı */}
-      <div className="w-[220px] flex-shrink-0 text-center">
-        <div className="w-32 h-32 mx-auto rounded-lg bg-gray-700" />
+      {/* Mobile: profile block is full width */}
+      <div className="md:w-[220px] w-full text-center md:text-left">
+        <div className="w-24 h-24 md:w-32 md:h-32 mx-auto md:mx-0 rounded-lg bg-gray-700" />
         <p className="mt-2 text-white font-bold">{post.userName}</p>
 
         <span className="text-xs bg-purple-600 text-white px-2 py-1 rounded-md">
           Üye
         </span>
 
-        <div className="text-left bg-[#0F172A] rounded-lg p-3 mt-3 text-gray-300 text-sm space-y-1">
+        <div className="bg-[#0F172A] rounded-lg p-3 mt-3 text-gray-300 text-sm space-y-1">
           <div>Mesajlar: —</div>
           <div>Beğeni: —</div>
         </div>
       </div>
 
-      {/* Mesaj İçeriği */}
       <div className="flex-1">
         <p className="text-gray-400 text-sm mb-2">
           {new Date(post.createdAt._seconds * 1000).toLocaleString("tr-TR")}
@@ -223,23 +230,26 @@ function PostItem({ post, index }) {
   );
 }
 
+/* ======================================================
+   ADD COMMENT BOX
+====================================================== */
 function AddCommentBox({ user, onSend }) {
   const [msg, setMsg] = useState("");
 
   return (
-    <div className="bg-[#1E293B] p-5 rounded-xl shadow">
-      <p className="text-gray-300 mb-2">Yanıt Yaz ({user.nickname})</p>
+    <div className="bg-[#1E293B] p-5 rounded-xl shadow space-y-3">
+      <p className="text-gray-300">Yanıt Yaz ({user.nickname})</p>
 
       <textarea
         className="bg-[#0F172A] text-white p-3 rounded-lg w-full h-36 resize-none"
         placeholder="Mesajınızı yazın..."
         value={msg}
         onChange={(e) => setMsg(e.target.value)}
-      ></textarea>
+      />
 
       <button
         onClick={() => onSend(msg)}
-        className="mt-3 bg-[#ffb347] hover:bg-[#ff9d1d] text-black font-bold px-6 py-2 rounded-md"
+        className="bg-[#ffb347] hover:bg-[#ff9d1d] text-black font-bold px-6 py-2 rounded-md w-full md:w-auto"
       >
         Gönder
       </button>

@@ -1,11 +1,8 @@
 import express from "express";
-import {
-  uploadSingle,
-  uploadResponse,
-} from "../controllers/uploadController.js";
+import { uploadAvatar, updateAvatar } from "../controllers/uploadController.js";
 
 const router = express.Router();
 
-router.post("/", uploadSingle, uploadResponse);
+router.post("/", uploadAvatar, updateAvatar);
 
 export default router;

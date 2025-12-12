@@ -57,7 +57,9 @@ export default function Navbar() {
         </div>
       ) : (
         <div className="font-bold text-white flex items-center gap-3">
-          {user.nickname}
+          <Link to="/profile" className="nav-item">
+            {user.nickname}
+          </Link>
           <button
             onClick={logout}
             className="px-3 py-1 bg-red-600 rounded-md hover:bg-red-700"
