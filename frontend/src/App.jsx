@@ -11,6 +11,9 @@ import useAdblockDetector from "./hooks/useAdblockDetector";
 import MobileNav from "./components/MobileNav";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import Messages from "./pages/Messages";
+import Chat from "./pages/Chat";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const adblock = useAdblockDetector();
@@ -42,22 +45,22 @@ function App() {
     );
   }
 
-  /* ================= APP ================= */
   return (
     <AuthProvider>
       <Navbar />
-
+      <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<HomeScreen />} />
         <Route path="/matches" element={<Matches />} />
         <Route path="/matches/:id" element={<Matches />} />
-
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/:id" element={<ForumDetail />} />
         <Route path="/create-thread" element={<CreateThread />} />
-
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/profile/:uid" element={<Profile />} />
+        <Route path="/messages/:uid" element={<Chat />} />
       </Routes>
 
       <MobileNav />

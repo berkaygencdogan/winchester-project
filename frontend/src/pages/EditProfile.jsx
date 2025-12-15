@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function EditProfile() {
   const { user, setUser } = useContext(AuthContext);
+  const [avatarFile, setAvatarFile] = useState(null);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -30,13 +31,40 @@ export default function EditProfile() {
   async function handleSave() {
     setLoading(true);
     try {
-      const res = await axios.post("/api/users/update-profile", {
-        ...form,
-        uid: user.uid,
-      });
+      // 1️⃣ AVATAR YÜKLE
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append("avatar", avatarFile);
+        formData.append("uid", user.uid);
+        formData.append("bio", form.bio);
+        formData.append("gender", form.gender);
+        formData.append("birthYear", form.birthYear);
 
-      setUser(res.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+        const res = await axios.post("/api/upload/avatar", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const updatedUser = {
+          ...user,
+          avatar: res.data.avatar,
+          bio: form.bio,
+          gender: form.gender,
+          birthYear: form.birthYear,
+        };
+
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      } else {
+        // 2️⃣ AVATAR YOKSA NORMAL UPDATE
+        const res = await axios.post("/api/users/update-profile", {
+          ...form,
+          uid: user.uid,
+        });
+
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
+
       navigate("/profile");
     } catch (err) {
       console.error("Profil güncellenemedi:", err);
@@ -56,7 +84,22 @@ export default function EditProfile() {
         "
       >
         <h1 className="text-2xl sm:text-3xl font-bold">Profili Düzenle</h1>
+        <div className="flex flex-col items-center gap-3">
+          <img
+            src={avatarFile ? URL.createObjectURL(avatarFile) : user.avatar}
+            className="w-28 h-28 rounded-full object-cover border"
+          />
 
+          <label className="cursor-pointer text-sm text-orange-600 font-semibold">
+            Profil Resmini Değiştir
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => setAvatarFile(e.target.files[0])}
+            />
+          </label>
+        </div>
         {/* FORM */}
         <div className="space-y-5">
           {/* Nickname */}

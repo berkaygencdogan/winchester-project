@@ -26,6 +26,8 @@ export const registerUser = async (req, res) => {
     // Kötü kelime filtresi + boşluk alma
     const cleanedNickname = filter.clean(nickname).replace(/\s+/g, "");
     const cleanedUsername = filter.clean(username).replace(/\s+/g, "");
+    const firstLetter = cleanedNickname.charAt(0).toUpperCase();
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${firstLetter}&background=ffb347&color=000&bold=true`;
 
     // UNIQUE CHECK — nickname
     const nicknameSnap = await db
@@ -57,7 +59,7 @@ export const registerUser = async (req, res) => {
       nickname: cleanedNickname.toLowerCase(),
       gender: gender || "",
       birthYear: birthYear || "",
-      avatar: null,
+      avatar: defaultAvatar,
       bio: "",
       emailVerified: false,
       passwordHash,

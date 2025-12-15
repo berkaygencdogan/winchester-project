@@ -1,6 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 import ForumTopicItem from "../components/ForumTopicItem";
 import { useTranslation } from "react-i18next";
 
@@ -9,16 +15,29 @@ export default function Forum() {
   const [topics, setTopics] = useState(undefined);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await axios.get("/api/forums");
-        setTopics(res.data.threads || []);
-      } catch (err) {
+    const db = getFirestore();
+
+    const q = query(
+      collection(db, "forumThreads"),
+      orderBy("lastMessageAt", "desc")
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const list = snap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTopics(list);
+      },
+      (err) => {
         console.error("Forum yüklenemedi:", err);
         setTopics([]);
       }
-    }
-    load();
+    );
+
+    return () => unsub();
   }, []);
 
   const safeTopics = Array.isArray(topics) ? topics : [];
