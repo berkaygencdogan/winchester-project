@@ -19,19 +19,19 @@ export default function ForumTopicItem({ topic }) {
     : new Date();
 
   const date = created.toLocaleDateString("tr-TR");
-
   const categoryKey = (topic.category || "genel").toLowerCase();
-
   const lastUser = author;
 
   return (
     <div
       onClick={() => navigate(`/forum/${topic.id}`)}
       className="
-        w-full p-4 rounded-xl cursor-pointer transition
+        w-full p-4 rounded-xl cursor-pointer
         flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4
-        bg-white hover:bg-slate-50 border border-slate-200
-        dark:bg-[#1E293B] dark:hover:bg-[#253142] dark:border-gray-700
+        bg-white text-slate-800 border border-slate-200
+        hover:bg-slate-50
+        dark:bg-[#1E293B] dark:text-white dark:border-gray-700 dark:hover:bg-[#253142]
+        transition-colors
       "
     >
       {/* SOL TARAF */}
@@ -62,31 +62,27 @@ export default function ForumTopicItem({ topic }) {
 
       {/* SAĞ TARAF */}
       <div className="flex justify-between sm:justify-end sm:gap-10 text-sm w-full sm:w-auto">
-        {/* Replies */}
         <div className="text-center">
-          <p className="text-slate-700 dark:text-gray-200 font-semibold">
+          <p className="font-semibold text-slate-900 dark:text-white">
             {replies}
           </p>
           <p className="text-slate-500 dark:text-gray-400">{t("answers")}</p>
         </div>
 
-        {/* Views */}
         <div className="text-center">
-          <p className="text-slate-700 dark:text-gray-200 font-semibold">
+          <p className="font-semibold text-slate-900 dark:text-white">
             {views}
           </p>
           <p className="text-slate-500 dark:text-gray-400">{t("view")}</p>
         </div>
 
-        {/* Last User */}
         <div className="text-right hidden sm:block">
-          <p className="text-slate-700 dark:text-gray-200">{lastUser}</p>
+          <p className="text-slate-700 dark:text-gray-300">{lastUser}</p>
           <p className="text-slate-500 dark:text-gray-400 text-sm">
             {t("lastResponse")}
           </p>
         </div>
 
-        {/* Avatar small */}
         <div className="hidden sm:flex w-10 h-10 rounded-lg bg-green-600 items-center justify-center text-white font-bold">
           {lastUser.charAt(0).toUpperCase()}
         </div>

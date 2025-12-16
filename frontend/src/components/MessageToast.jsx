@@ -10,7 +10,7 @@ export default function MessageToast({
 
   return (
     <div
-      onClick={() => navigate(`/chat/${toUid}`)}
+      onClick={() => navigate(`/messages/${toUid}`)}
       className="
         cursor-pointer
         flex items-center gap-3

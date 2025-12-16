@@ -12,56 +12,93 @@ export default function LineupsView({ data }) {
   const [home, away] = data;
 
   return (
-    <div className="space-y-10 mt-6">
-      {/* ================= HOME TEAM ================= */}
-      <TeamHeader
-        team={home.team}
-        coach={home.coach}
-        formation={home.formation}
-        align="left"
-      />
-
-      {/* HOME FIELD */}
-      <div className="w-full flex justify-center mt-4">
-        <div className="w-full max-w-[320px] sm:max-w-[400px]">
-          <FormationView
+    <div className="mt-6">
+      {/* ================= DESKTOP: YAN YANA ================= */}
+      <div className="hidden sm:grid grid-cols-2 gap-8">
+        {/* ========== HOME COLUMN ========== */}
+        <div className="space-y-6">
+          <TeamHeader
+            team={home.team}
+            coach={home.coach}
             formation={home.formation}
-            players={home.startXI}
-            side="home"
           />
+
+          <FormationWrapper>
+            <FormationView
+              formation={home.formation}
+              players={home.startXI}
+              side="home"
+            />
+          </FormationWrapper>
+
+          <PlayerList title="Starting XI" list={home.startXI} />
+          <PlayerList title="Substitutes" list={home.substitutes} />
         </div>
-      </div>
 
-      {/* HOME STARTING XI */}
-      <PlayerList title="Starting XI" list={home.startXI} />
-
-      {/* HOME SUBS */}
-      <PlayerList title="Substitutes" list={home.substitutes} />
-
-      {/* ================= AWAY TEAM ================= */}
-      <TeamHeader
-        team={away.team}
-        coach={away.coach}
-        formation={away.formation}
-        align="right"
-      />
-
-      {/* AWAY FIELD */}
-      <div className="w-full flex justify-center mt-4">
-        <div className="w-full max-w-[320px] sm:max-w-[400px]">
-          <FormationView
+        {/* ========== AWAY COLUMN ========== */}
+        <div className="space-y-6">
+          <TeamHeader
+            team={away.team}
+            coach={away.coach}
             formation={away.formation}
-            players={away.startXI}
-            side="away"
+            align="right"
           />
+
+          <FormationWrapper>
+            <FormationView
+              formation={away.formation}
+              players={away.startXI}
+              side="away"
+            />
+          </FormationWrapper>
+
+          <PlayerList title="Starting XI" list={away.startXI} />
+          <PlayerList title="Substitutes" list={away.substitutes} />
         </div>
       </div>
 
-      {/* AWAY STARTING XI */}
-      <PlayerList title="Starting XI" list={away.startXI} />
+      {/* ================= MOBILE: ALT ALTA ================= */}
+      <div className="sm:hidden space-y-10">
+        {/* HOME */}
+        <div className="space-y-6">
+          <TeamHeader
+            team={home.team}
+            coach={home.coach}
+            formation={home.formation}
+          />
 
-      {/* AWAY SUBS */}
-      <PlayerList title="Substitutes" list={away.substitutes} />
+          <FormationWrapper>
+            <FormationView
+              formation={home.formation}
+              players={home.startXI}
+              side="home"
+            />
+          </FormationWrapper>
+
+          <PlayerList title="Starting XI" list={home.startXI} />
+          <PlayerList title="Substitutes" list={home.substitutes} />
+        </div>
+
+        {/* AWAY */}
+        <div className="space-y-6">
+          <TeamHeader
+            team={away.team}
+            coach={away.coach}
+            formation={away.formation}
+          />
+
+          <FormationWrapper>
+            <FormationView
+              formation={away.formation}
+              players={away.startXI}
+              side="away"
+            />
+          </FormationWrapper>
+
+          <PlayerList title="Starting XI" list={away.startXI} />
+          <PlayerList title="Substitutes" list={away.substitutes} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -70,9 +107,8 @@ export default function LineupsView({ data }) {
    TEAM HEADER
 ====================================================== */
 function TeamHeader({ team, coach, formation, align }) {
-  const logo = team?.logo || team?.team?.logo || team?.teamDetails?.logo || "";
-  const name =
-    team?.name || team?.team?.name || team?.teamDetails?.name || "Unknown Team";
+  const logo = team?.logo || team?.team?.logo || "";
+  const name = team?.name || team?.team?.name || "Unknown Team";
   const coachName = coach?.name || "Unknown Coach";
 
   return (
@@ -90,6 +126,17 @@ function TeamHeader({ team, coach, formation, align }) {
         </p>
         <p className="text-orange-500 font-semibold">{formation || "-"}</p>
       </div>
+    </div>
+  );
+}
+
+/* ======================================================
+   FORMATION WRAPPER (SABİT GENİŞLİK)
+====================================================== */
+function FormationWrapper({ children }) {
+  return (
+    <div className="w-full flex justify-center">
+      <div className="max-w-[520px] w-full">{children}</div>
     </div>
   );
 }

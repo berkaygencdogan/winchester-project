@@ -20,20 +20,29 @@ export default function MobileNavbar() {
       className="
         sm:hidden w-full
         px-3 py-3
-        bg-white dark:bg-gray-900
-        border-b border-slate-200 dark:border-gray-700
+        bg-white text-slate-800
+        border-b border-slate-200
+        dark:bg-gray-900 dark:text-white dark:border-gray-700
+        transition-colors
       "
     >
       {/* ÜST SATIR */}
       <div className="flex items-center justify-between gap-2">
         {/* LANG */}
         <select
-          className="p-2 rounded-md bg-white border border-slate-300 dark:bg-[#1E293B]"
+          className="
+            p-2 rounded-md
+            bg-white border border-slate-300
+            text-slate-800
+            dark:bg-[#1E293B] dark:border-gray-700 dark:text-white
+          "
           value={i18n.language}
           onChange={(e) => i18n.changeLanguage(e.target.value)}
         >
           {["en", "tr"].map((l) => (
-            <option key={l}>{l.toUpperCase()}</option>
+            <option key={l} value={l}>
+              {l.toUpperCase()}
+            </option>
           ))}
         </select>
 
@@ -42,7 +51,12 @@ export default function MobileNavbar() {
           {/* SEARCH ICON */}
           <button
             onClick={() => setShowSearch((s) => !s)}
-            className="p-2 rounded-md bg-slate-100 dark:bg-gray-800"
+            className="
+              p-2 rounded-md
+              bg-slate-100 text-slate-700
+              dark:bg-gray-800 dark:text-white
+              transition
+            "
           >
             <Search size={18} />
           </button>
@@ -50,9 +64,14 @@ export default function MobileNavbar() {
           {/* THEME */}
           <button
             onClick={toggleTheme}
-            className="px-3 py-1 rounded-md bg-slate-100 dark:bg-gray-800"
+            className="
+              px-3 py-1 rounded-md
+              bg-slate-100 text-slate-800
+              dark:bg-gray-800 dark:text-white
+              transition
+            "
           >
-            {theme === "dark" ? "☀️" : "🌙"}
+            {theme === "dark" ? "🌙" : "☀️"}
           </button>
 
           {user && <NavbarNotification />}
@@ -78,7 +97,11 @@ export default function MobileNavbar() {
 
           <button
             onClick={logout}
-            className="px-3 py-1 bg-red-600 rounded-md text-white text-sm"
+            className="
+              px-3 py-1 rounded-md
+              bg-red-600 text-white text-sm
+              hover:bg-red-700 transition
+            "
           >
             {t("logout")}
           </button>

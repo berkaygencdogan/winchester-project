@@ -63,7 +63,7 @@ export default function NavbarNotification() {
                 <div
                   onClick={() => {
                     toast.dismiss(t.id);
-                    navigate(`/chat/${newest.from.uid}`);
+                    navigate(`/messages/${newest.from.uid}`);
                   }}
                 >
                   <MessageToast
@@ -153,7 +153,7 @@ export default function NavbarNotification() {
           {messages.map((m) => (
             <Link
               key={m.id}
-              to={`/chat/${m.from.uid}`}
+              to={`/messages/${m.from.uid}`}
               onClick={() => {
                 markAsRead(m.from.uid);
                 setOpen(false);

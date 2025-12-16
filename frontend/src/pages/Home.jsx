@@ -11,11 +11,25 @@ export default function HomeScreen() {
   const tabs = ["bot", "admin", "forum"];
 
   return (
-    <div className="max-w-[1600px] mx-auto">
+    <div
+      className="
+     mx-auto
+    bg-slate-50 text-slate-900
+    dark:bg-[#0F172A] dark:text-white
+    min-h-screen     relative
+
+  "
+    >
       {/* ================= MOBILE VIEW ================= */}
       <div className="sm:hidden px-3 pt-3">
         {/* Sticky Tab Bar */}
-        <div className="sticky top-[65px] z-20 bg-slate-50 dark:bg-[#0F172A] py-2">
+        <div
+          className="
+  sticky top-[65px] z-20 py-2
+  bg-slate-50 text-slate-900
+  dark:bg-[#0F172A] dark:text-white
+"
+        >
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {tabs.map((tab) => (
               <button
@@ -53,7 +67,13 @@ export default function HomeScreen() {
         {/* CENTER */}
         <div className="col-span-6">
           {/* Tabs */}
-          <div className="flex gap-3 mb-4 p-2 rounded-xl bg-white border border-slate-200 dark:bg-[#1E293B] dark:border-gray-700">
+          <div
+            className="
+  flex gap-3 mb-4 p-2 rounded-xl
+  bg-white text-slate-900 border border-slate-200
+  dark:bg-[#1E293B] dark:text-white dark:border-gray-700
+"
+          >
             {tabs.map((tab) => (
               <button
                 key={tab}

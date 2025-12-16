@@ -1,87 +1,22 @@
 @import "tailwindcss";
 
-body {
-  @apply bg-slate-50 text-slate-900 transition-colors duration-300;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* DARK MODE */
-.dark body {
-  @apply bg-gray-950 text-white;
+html,
+body,
+#root {
+  height: 100%;
 }
-
-nav {
-  @apply transition-colors duration-500 bg-white border-b border-slate-200;
-}
-
-.dark nav {
-  @apply bg-gray-900 border-gray-700 text-white;
-}
-
-a {
-  @apply text-blue-600 hover:text-blue-800 transition-colors;
-}
-
-.dark a {
-  @apply text-gray-100 hover:text-yellow-400;
-}
-
 .card {
-  @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+  @apply bg-white text-slate-800
+    border border-slate-200
+    rounded-xl
+    shadow
+    transition-colors;
 }
 
 .dark .card {
-  @apply bg-slate-900 border-slate-700;
-}
-
-.input-auth {
-  @apply w-full px-3 py-2 rounded-lg
-    bg-white text-slate-900
-    border border-slate-300
-    focus:border-blue-500
-    outline-none transition;
-}
-
-.dark .input-auth {
-  @apply bg-[#0F172A] text-white border-gray-700 focus:border-orange-500;
-}
-
-.custom-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 6px;
-}
-
-.dark .custom-scroll::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
-.field-grid {
-  background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0) 20%
-    ),
-    linear-gradient(
-      to top,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0) 20%
-    ),
-    #1f7a1f;
-  background-size: cover;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-.animate-slideUp {
-  animation: slideUp 0.25s ease-out;
+  @apply bg-[#1E293B]
+    text-white
+    border-gray-700;
 }
