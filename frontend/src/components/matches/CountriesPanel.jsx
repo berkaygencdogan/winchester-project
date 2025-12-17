@@ -1,52 +1,54 @@
+import { useEffect, useState } from "react";
+
 export default function CountriesPanel() {
+  const [countries, setCountries] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/football/countries")
+      .then((res) => res.json())
+      .then(setCountries)
+      .catch(console.error);
+  }, []);
+
+  const filtered = countries.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div
-      className="
-  p-3 rounded-md flex justify-between items-center mb-3
-  bg-white border border-slate-200
-  dark:bg-[#1B2534] dark:border-gray-700
-"
-    >
-      <div className="bg-[#1B2534] p-3 rounded-md flex justify-between items-center mb-3">
-        <span className="font-semibold">ALL</span>
+    <div className="p-3 rounded-md bg-white border border-slate-200 dark:bg-[#1B2534] dark:border-gray-700">
+      <div className="mb-3">
         <input
           type="text"
-          placeholder="Search"
-          className="
-  px-2 py-1 rounded text-sm outline-none
-  bg-slate-100 text-slate-900 border border-slate-300
-  dark:bg-[#0F1622] dark:text-white dark:border-gray-700
-"
+          placeholder="Search country"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-3 py-2 rounded text-sm bg-slate-100 dark:bg-[#0F1622]"
         />
       </div>
 
-      <div className="space-y-2">
-        <CountryItem name="Argentina" flag="ar" leagues={14} />
-        <CountryItem name="Brazil" flag="br" leagues={22} />
-        <CountryItem name="Spain" flag="es" leagues={16} />
-        <CountryItem name="England" flag="gb" leagues={12} />
+      <div className="space-y-2 max-h-[400px] overflow-y-auto">
+        {filtered.map((c) => (
+          <CountryItem key={c.code} country={c} />
+        ))}
       </div>
     </div>
   );
 }
 
-function CountryItem({ name, flag, leagues }) {
+function CountryItem({ country }) {
   return (
-    <div
-      className="
-  flex items-center justify-between p-2 rounded-md cursor-pointer
-  hover:bg-slate-100
-  dark:hover:bg-[#1B2534]
-"
-    >
+    <div className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-[#1B2534] cursor-pointer">
       <div className="flex items-center gap-2">
-        <img
-          src={`https://media.api-sports.io/flags/${flag}.svg`}
-          className="w-6 h-4 rounded"
-        />
-        <span>{name}</span>
+        {country.flag && (
+          <img
+            src={country.flag}
+            className="w-6 h-4 rounded"
+            alt={country.name}
+          />
+        )}
+        <span>{country.name}</span>
       </div>
-      <span className="text-sm opacity-70">{leagues}</span>
     </div>
   );
 }

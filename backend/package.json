@@ -24,6 +24,8 @@
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
     "openai": "^6.10.0",
     "path": "^0.12.7",
     "url": "^0.11.4",

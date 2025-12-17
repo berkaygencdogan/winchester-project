@@ -6,6 +6,7 @@ import useTheme from "../hooks/useTheme";
 import NavbarSearch from "../components/NavbarSearch";
 import NavbarNotification from "../components/NavbarNotification";
 import i18n from "../i18n";
+import { Home, Trophy, MessageCircle, User } from "lucide-react";
 
 export default function DesktopNavbar() {
   const { t } = useTranslation();
@@ -24,15 +25,27 @@ export default function DesktopNavbar() {
         transition-colors
       "
     >
-      <Link to="/" className="link font-semibold">
+      <Link
+        to="/"
+        className="link font-semibold flex items-center gap-1 hover:underline"
+      >
+        <Home />
         {t("home")}
       </Link>
 
-      <Link to="/matches" className="link">
+      <Link
+        to="/matches"
+        className="link font-semibold flex items-center gap-1 hover:underline"
+      >
+        <Trophy />
         {t("matches")}
       </Link>
 
-      <Link to="/forum" className="link">
+      <Link
+        to="/forum"
+        className="link font-semibold flex items-center gap-1 hover:underline"
+      >
+        <MessageCircle />
         {t("forum")}
       </Link>
 
@@ -45,12 +58,24 @@ export default function DesktopNavbar() {
             p-2 rounded-md
             bg-white border border-slate-300
             text-slate-800
-            dark:bg-[#1E293B] dark:border-gray-700 dark:text-white
+            dark:bg-[#1E293B] dark:border-gray-700 dark:text-white hover:border-slate-400 cursor-pointer
           "
           value={i18n.language}
           onChange={(e) => i18n.changeLanguage(e.target.value)}
         >
-          {["en", "tr", "de", "fr"].map((l) => (
+          {[
+            "en",
+            "tr",
+            "de",
+            "fr",
+            "ar",
+            "es",
+            "it",
+            "ja",
+            "pt",
+            "ru",
+            "zh",
+          ].map((l) => (
             <option key={l} value={l}>
               {l.toUpperCase()}
             </option>
@@ -64,19 +89,22 @@ export default function DesktopNavbar() {
             px-3 py-1 rounded-md
             bg-slate-100 text-slate-800
             dark:bg-gray-800 dark:text-white
-            transition
+            transition hover:bg-slate-200 dark:hover:bg-gray-700 cursor-pointer
           "
           title="Tema değiştir"
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? "🌙" : "☀️"}
         </button>
 
         {user && <NavbarNotification />}
 
         {user && (
           <>
-            <Link to="/profile" className="link font-semibold">
-              {user.nickname}
+            <Link
+              to="/profile"
+              className="link font-semibold flex items-center gap-1 hover:underline"
+            >
+              <User /> {user.nickname}
             </Link>
 
             <button
@@ -84,7 +112,7 @@ export default function DesktopNavbar() {
               className="
                 px-3 py-1 rounded-md
                 bg-red-600 text-white
-                hover:bg-red-700 transition
+                hover:bg-red-700 transition hover:underline cursor-pointer
               "
             >
               {t("logout")}

@@ -126,7 +126,7 @@ export default function NavbarNotification() {
       {/* 🔔 ICON */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#0F172A]"
+        className="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#0F172A] hover:scale-105 transition cursor-pointer"
       >
         <Bell className="text-slate-700 dark:text-gray-300" />
 

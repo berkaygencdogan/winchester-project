@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useMatch } from "../../hooks/useMatch";
-import axios from "axios";
 
 export default function FixturesPanel() {
   const [fixtures, setFixtures] = useState([]);
@@ -8,12 +7,12 @@ export default function FixturesPanel() {
   const { setSelectedMatchId } = useMatch();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/matches/fixtures/today")
-      .then((res) => setFixtures(res.data));
+    fetch("/api/matches/today")
+      .then((res) => res.json())
+      .then((json) => setFixtures(json.data || []))
+      .catch(console.error);
   }, []);
 
-  /* ---------------- FILTER ---------------- */
   const filterFixtures = fixtures.filter((match) => {
     const status = match.fixture.status.short;
 
@@ -28,41 +27,29 @@ export default function FixturesPanel() {
 
   return (
     <div className="p-3">
-      {/* ================= TAB BAR ================= */}
       <div className="flex gap-3 mb-3">
         {["ALL", "LIVE", "FINISHED", "SCHEDULED"].map((t) => (
           <button
             key={t}
             onClick={() => setFilter(t)}
-            className={`px-4 py-1 rounded-md text-sm transition
-              ${
-                filter === t
-                  ? "bg-orange-600 text-white"
-                  : `
-                    bg-slate-100 text-slate-700 hover:bg-slate-200
-                    dark:bg-[#1B2534] dark:text-gray-300 dark:hover:bg-[#223044]
-                  `
-              }
-            `}
+            className={`px-4 py-1 rounded-md text-sm ${
+              filter === t
+                ? "bg-orange-600 text-white"
+                : "bg-slate-100 dark:bg-[#1B2534]"
+            }`}
           >
             {t}
           </button>
         ))}
       </div>
 
-      {/* ================= MATCH LIST ================= */}
       {filterFixtures.map((match) => (
         <div
           key={match.fixture.id}
           onClick={() => setSelectedMatchId(match.fixture.id)}
-          className="
-            mb-4 p-3 rounded-md cursor-pointer transition
-            bg-white border border-slate-200 hover:bg-slate-50
-            dark:bg-[#1B2534] dark:border-gray-700 dark:hover:bg-[#273244]
-          "
+          className="mb-4 p-3 rounded-md cursor-pointer bg-white dark:bg-[#1B2534]"
         >
-          {/* STATUS */}
-          <div className="text-xs font-bold mb-1 text-green-600 dark:text-green-400">
+          <div className="text-xs font-bold mb-1 text-green-600">
             {match.fixture.status.short}
           </div>
 
@@ -74,7 +61,6 @@ export default function FixturesPanel() {
   );
 }
 
-/* ================= TEAM ROW ================= */
 function TeamRow({ team, goals }) {
   return (
     <div className="flex justify-between items-center py-1">
@@ -82,7 +68,6 @@ function TeamRow({ team, goals }) {
         <img src={team.logo} className="w-5 h-5" />
         <span>{team.name}</span>
       </div>
-
       <span className="font-semibold">{goals ?? "-"}</span>
     </div>
   );

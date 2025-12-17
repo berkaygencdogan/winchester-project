@@ -68,7 +68,7 @@ export default function MobileNavbar() {
               px-3 py-1 rounded-md
               bg-slate-100 text-slate-800
               dark:bg-gray-800 dark:text-white
-              transition
+              transition hover:bg-slate-200 dark:hover:bg-gray-700
             "
           >
             {theme === "dark" ? "🌙" : "☀️"}

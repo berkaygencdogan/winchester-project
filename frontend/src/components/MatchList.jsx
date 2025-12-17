@@ -4,19 +4,35 @@ import { useMatch } from "../hooks/useMatch";
 import Skeleton from "./ui/Skeleton";
 
 export default function MatchList() {
-  const [matches, setMatches] = useState(null);
+  const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { setSelectedMatchId } = useMatch(); // ← ÖNEMLİ
+  const { setSelectedMatchId } = useMatch();
 
   useEffect(() => {
-    fetch("/mock/fixtures_fener_gs.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setMatches(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    let cancelled = false;
+
+    async function fetchMatches() {
+      try {
+        const res = await fetch("http://localhost:5000/api/matches/today");
+        const json = await res.json();
+
+        // Backend { source, data } dönüyor
+        if (!cancelled) {
+          setMatches(json.data || []);
+        }
+      } catch (err) {
+        console.error("MATCH FETCH ERROR:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchMatches();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleClick = (match) => {
@@ -31,26 +47,10 @@ export default function MatchList() {
         {[...Array(8)].map((_, i) => (
           <div
             key={i}
-            className="
-  p-2 rounded-lg
-  bg-slate-100
-  dark:bg-[#1E293B]
-"
+            className="p-2 rounded-lg bg-slate-100 dark:bg-[#1E293B]"
           >
-            <Skeleton
-              className="
-  p-2 rounded-lg
-  bg-slate-100
-  dark:bg-[#1E293B]
-"
-            />
-            <Skeleton
-              className="
-  p-2 rounded-lg
-  bg-slate-100
-  dark:bg-[#1E293B]
-"
-            />
+            <Skeleton className="p-2 rounded-lg" />
+            <Skeleton className="p-2 rounded-lg mt-2" />
           </div>
         ))}
       </div>
@@ -66,18 +66,22 @@ export default function MatchList() {
       {matches.map((m) => (
         <div
           key={m.fixture.id}
-          onClick={() => handleClick(m)} // ← MAÇA TIKLA → DETAY AÇ
+          onClick={() => handleClick(m)}
           className="
-    rounded-lg p-3 cursor-pointer transition
-    bg-white border border-slate-200 hover:bg-slate-50
-    dark:bg-[#1E293B] dark:hover:bg-[#233044] dark:border-gray-700
-  "
+            rounded-lg p-3 cursor-pointer transition
+            bg-white border border-slate-200 hover:bg-slate-50
+            dark:bg-[#1E293B] dark:hover:bg-[#233044] dark:border-gray-700
+          "
         >
           <p className="text-sm text-gray-400">{m.league.name}</p>
 
           <div className="flex justify-between items-center mt-2">
             <div className="flex items-center gap-2">
-              <img src={m.teams.home.logo} className="w-6 h-6" />
+              <img
+                src={m.teams.home.logo}
+                alt={m.teams.home.name}
+                className="w-6 h-6"
+              />
               <span>{m.teams.home.name}</span>
             </div>
 
@@ -87,7 +91,11 @@ export default function MatchList() {
 
             <div className="flex items-center gap-2">
               <span>{m.teams.away.name}</span>
-              <img src={m.teams.away.logo} className="w-6 h-6" />
+              <img
+                src={m.teams.away.logo}
+                alt={m.teams.away.name}
+                className="w-6 h-6"
+              />
             </div>
           </div>
 

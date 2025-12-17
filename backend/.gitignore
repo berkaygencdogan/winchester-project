@@ -2,3 +2,7 @@ node_modules/
 backend/firebase/serviceAccountKey.json
 **/serviceAccountKey.json
 serviceAccountKey.json
+**/api.json
+api.json
+backend/firebase/api.json
+cache/
