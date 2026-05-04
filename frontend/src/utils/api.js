@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/auth";
+const API = "http://localhost:5050/api/auth";
 
 export const sendPhoneToken = (idToken) =>
   axios.post(`${API}/verify-phone`, { idToken });

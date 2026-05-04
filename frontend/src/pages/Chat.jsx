@@ -65,7 +65,7 @@ export default function Chat() {
     const q = query(
       collection(db, "messages"),
       where("participants", "array-contains", me.uid),
-      orderBy("createdAt", "asc")
+      orderBy("createdAt", "asc"),
     );
 
     const unsub = onSnapshot(q, (snap) => {
@@ -74,7 +74,7 @@ export default function Chat() {
         .filter(
           (m) =>
             (m.from.uid === me.uid && m.to.uid === uid) ||
-            (m.from.uid === uid && m.to.uid === me.uid)
+            (m.from.uid === uid && m.to.uid === me.uid),
         );
 
       setMessages(list);
@@ -197,7 +197,7 @@ export default function Chat() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://localhost:5000/api/upload/message", {
+    const res = await fetch("http://localhost:5050/api/upload/message", {
       method: "POST",
       body: formData,
     });

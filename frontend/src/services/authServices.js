@@ -5,7 +5,7 @@ import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { completeMagicLinkLogin } from "../firebase/firebase";
 
-const API = "http://localhost:5000/api/users";
+const API = "http://localhost:5050/api/users";
 
 /* ---------------------------------------------
    EMAIL + PASSWORD LOGIN

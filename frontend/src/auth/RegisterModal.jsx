@@ -7,7 +7,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 
-const API = "http://localhost:5000/api/users";
+const API = "http://localhost:5050/api/users";
 
 export default function RegisterModal({ onClose }) {
   const [successMsg, setSuccessMsg] = useState("");
@@ -29,7 +29,7 @@ export default function RegisterModal({ onClose }) {
       const fbUser = await createUserWithEmailAndPassword(
         auth,
         form.email,
-        form.password
+        form.password,
       );
 
       await sendEmailVerification(fbUser.user);

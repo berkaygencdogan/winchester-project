@@ -8,7 +8,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 
-const API = "http://localhost:5000/api/users";
+const API = "http://localhost:5050/api/users";
 
 export default function LoginModal({ onClose }) {
   const [email, setEmail] = useState("");

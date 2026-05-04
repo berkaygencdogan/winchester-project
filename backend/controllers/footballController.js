@@ -1,26 +1,16 @@
-import express from "express";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const router = express.Router();
 
 const API_ENABLED = true;
 const FOOTBALL_API_BASE = "https://v3.football.api-sports.io";
-
-const FOOTBALL_HEADERS = {
-  "x-apisports-key": process.env.FOOTBALL_API_KEY,
-};
 
 const CACHE_DIR = path.resolve("cache");
 const TODAY_CACHE_FILE = path.join(CACHE_DIR, "football-today.json");
 const LIVE_CACHE_FILE = path.join(CACHE_DIR, "football-live.json");
 
-const TODAY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 dakika
-const LIVE_CACHE_TTL_MS = 30 * 1000; // 30 saniye
+const TODAY_CACHE_TTL_MS = 5 * 60 * 1000;
+const LIVE_CACHE_TTL_MS = 30 * 1000;
 
 function ensureCacheDir() {
   if (!fs.existsSync(CACHE_DIR)) {
@@ -58,6 +48,14 @@ function writeCache(file, data) {
   );
 }
 
+function cacheIsValid(cache, ttl) {
+  return (
+    cache.timestamp &&
+    Date.now() - cache.timestamp < ttl &&
+    Array.isArray(cache.data)
+  );
+}
+
 function getTodayUTC() {
   return new Date().toISOString().split("T")[0];
 }
@@ -72,7 +70,9 @@ async function footballGet(endpoint, params = {}) {
   checkApiKey();
 
   const response = await axios.get(`${FOOTBALL_API_BASE}${endpoint}`, {
-    headers: FOOTBALL_HEADERS,
+    headers: {
+      "x-apisports-key": process.env.FOOTBALL_API_KEY,
+    },
     params,
     timeout: 20000,
   });
@@ -134,24 +134,14 @@ function formatFixture(m) {
   };
 }
 
-function cacheIsValid(cache, ttl) {
-  return (
-    cache.timestamp &&
-    Date.now() - cache.timestamp < ttl &&
-    Array.isArray(cache.data)
-  );
-}
-
-// ================= ROUTES =================
-
-router.get("/health", (req, res) => {
+export function health(req, res) {
   res.json({
     success: true,
     status: "ok",
   });
-});
+}
 
-router.get("/today", async (req, res) => {
+export async function getTodayFixtures(req, res) {
   try {
     const cache = readCache(TODAY_CACHE_FILE);
 
@@ -179,7 +169,7 @@ router.get("/today", async (req, res) => {
 
     writeCache(TODAY_CACHE_FILE, fixtures);
 
-    res.json({
+    return res.json({
       success: true,
       source: "api",
       count: fixtures.length,
@@ -188,15 +178,15 @@ router.get("/today", async (req, res) => {
   } catch (err) {
     console.error("FOOTBALL TODAY ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "FOOTBALL_TODAY_FETCH_FAILED",
       message: err.message,
     });
   }
-});
+}
 
-router.get("/live", async (req, res) => {
+export async function getLiveFixtures(req, res) {
   try {
     const cache = readCache(LIVE_CACHE_FILE);
 
@@ -224,7 +214,7 @@ router.get("/live", async (req, res) => {
 
     writeCache(LIVE_CACHE_FILE, matches);
 
-    res.json({
+    return res.json({
       success: true,
       source: "api",
       count: matches.length,
@@ -233,21 +223,21 @@ router.get("/live", async (req, res) => {
   } catch (err) {
     console.error("FOOTBALL LIVE ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "FOOTBALL_LIVE_FETCH_FAILED",
       message: err.message,
     });
   }
-});
+}
 
-router.get("/:id/events", async (req, res) => {
+export async function getMatchEvents(req, res) {
   try {
     const data = await footballGet("/fixtures/events", {
       fixture: req.params.id,
     });
 
-    res.json({
+    return res.json({
       success: true,
       fixture_id: Number(req.params.id),
       count: data.response?.length || 0,
@@ -256,20 +246,20 @@ router.get("/:id/events", async (req, res) => {
   } catch (err) {
     console.error("EVENTS API ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "EVENTS_FETCH_FAILED",
     });
   }
-});
+}
 
-router.get("/:id/statistics", async (req, res) => {
+export async function getMatchStatistics(req, res) {
   try {
     const data = await footballGet("/fixtures/statistics", {
       fixture: req.params.id,
     });
 
-    res.json({
+    return res.json({
       success: true,
       fixture_id: Number(req.params.id),
       count: data.response?.length || 0,
@@ -278,20 +268,20 @@ router.get("/:id/statistics", async (req, res) => {
   } catch (err) {
     console.error("STATISTICS API ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "STATISTICS_FETCH_FAILED",
     });
   }
-});
+}
 
-router.get("/:id/lineups", async (req, res) => {
+export async function getMatchLineups(req, res) {
   try {
     const data = await footballGet("/fixtures/lineups", {
       fixture: req.params.id,
     });
 
-    res.json({
+    return res.json({
       success: true,
       fixture_id: Number(req.params.id),
       count: data.response?.length || 0,
@@ -300,20 +290,20 @@ router.get("/:id/lineups", async (req, res) => {
   } catch (err) {
     console.error("LINEUPS API ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "LINEUPS_FETCH_FAILED",
     });
   }
-});
+}
 
-router.get("/:id/players", async (req, res) => {
+export async function getMatchPlayers(req, res) {
   try {
     const data = await footballGet("/fixtures/players", {
       fixture: req.params.id,
     });
 
-    res.json({
+    return res.json({
       success: true,
       fixture_id: Number(req.params.id),
       count: data.response?.length || 0,
@@ -322,11 +312,9 @@ router.get("/:id/players", async (req, res) => {
   } catch (err) {
     console.error("PLAYERS API ERROR:", err.response?.data || err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "PLAYERS_FETCH_FAILED",
     });
   }
-});
-
-export default router;
+}

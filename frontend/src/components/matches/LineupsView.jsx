@@ -156,7 +156,7 @@ function PlayerList({ title, list }) {
           dark:bg-[#1E293B] dark:border-gray-700
         "
       >
-        {list.length === 0 ? (
+        {!list || list.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-gray-400">Veri yok.</p>
         ) : (
           <table className="w-full text-left border-separate border-spacing-y-2">
@@ -169,7 +169,7 @@ function PlayerList({ title, list }) {
             </thead>
 
             <tbody>
-              {list.map((p, i) => (
+              {(list || []).map((p, i) => (
                 <tr
                   key={i}
                   className="

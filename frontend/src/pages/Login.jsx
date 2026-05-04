@@ -16,13 +16,13 @@ export default function PhoneLogin({ onLogin }) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
-        { size: "invisible" }
+        { size: "invisible" },
       );
 
       const result = await signInWithPhoneNumber(
         auth,
         phone,
-        window.recaptchaVerifier
+        window.recaptchaVerifier,
       );
 
       setConfirmation(result);
@@ -39,10 +39,10 @@ export default function PhoneLogin({ onLogin }) {
       const idToken = await userCred.user.getIdToken();
 
       const res = await axios.post(
-        "http://localhost:5000/api/users/login-phone",
+        "http://localhost:5050/api/users/login-phone",
         {
           idToken,
-        }
+        },
       );
 
       onLogin(res.data.user, res.data.token);

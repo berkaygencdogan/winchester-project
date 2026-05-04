@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
 import { useMatch } from "../../hooks/useMatch";
 
+const API = "http://localhost:5050";
+
 export default function FixturesPanel() {
   const [fixtures, setFixtures] = useState([]);
   const [filter, setFilter] = useState("ALL");
   const { setSelectedMatchId } = useMatch();
 
   useEffect(() => {
-    fetch("/api/matches/today")
+    fetch(`${API}/api/football/today`)
       .then((res) => res.json())
       .then((json) => setFixtures(json.data || []))
       .catch(console.error);
   }, []);
 
   const filterFixtures = fixtures.filter((match) => {
-    const status = match.fixture.status.short;
+    const status = match.status?.short;
 
     if (filter === "ALL") return true;
-    if (filter === "LIVE")
+    if (filter === "LIVE") {
       return ["1H", "2H", "HT", "ET", "P", "LIVE"].includes(status);
-    if (filter === "FINISHED") return ["FT", "AET", "PEN"].includes(status);
-    if (filter === "SCHEDULED") return status === "NS";
+    }
+    if (filter === "FINISHED") {
+      return ["FT", "AET", "PEN"].includes(status);
+    }
+    if (filter === "SCHEDULED") {
+      return status === "NS";
+    }
 
     return true;
   });
@@ -45,16 +52,16 @@ export default function FixturesPanel() {
 
       {filterFixtures.map((match) => (
         <div
-          key={match.fixture.id}
-          onClick={() => setSelectedMatchId(match.fixture.id)}
+          key={match.id}
+          onClick={() => setSelectedMatchId(match.id)}
           className="mb-4 p-3 rounded-md cursor-pointer bg-white dark:bg-[#1B2534]"
         >
           <div className="text-xs font-bold mb-1 text-green-600">
-            {match.fixture.status.short}
+            {match.status?.short}
           </div>
 
-          <TeamRow team={match.teams.home} goals={match.goals.home} />
-          <TeamRow team={match.teams.away} goals={match.goals.away} />
+          <TeamRow team={match.home} goals={match.score?.home} />
+          <TeamRow team={match.away} goals={match.score?.away} />
         </div>
       ))}
     </div>
@@ -65,9 +72,10 @@ function TeamRow({ team, goals }) {
   return (
     <div className="flex justify-between items-center py-1">
       <div className="flex items-center gap-2">
-        <img src={team.logo} className="w-5 h-5" />
-        <span>{team.name}</span>
+        <img src={team?.logo} className="w-5 h-5" alt={team?.name} />
+        <span>{team?.name}</span>
       </div>
+
       <span className="font-semibold">{goals ?? "-"}</span>
     </div>
   );
